@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AJ Image Compressor & ID Card Studio Pro</title>
+    <title>AJ Image Compressor & Pro ID Card Studio</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -18,10 +18,12 @@
             }
         }
     </script>
-    <!-- JSZip, FileSaver & jsPDF -->
+    <!-- JSZip, FileSaver, jsPDF & Cropper.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -82,7 +84,7 @@
                 AJ IMAGE COMPRESSOR & ID STUDIO
             </h1>
             <p class="text-xs sm:text-sm opacity-80 max-w-xl mx-auto font-medium">
-                Pro Grade Multi-Mode Optimizer. Single, Bulk & ID Card Front-Back Merger with PDF Export.
+                Pro Grade Multi-Mode Optimizer. Single, Bulk & ID Card Studio with Crop, 360° Rotate & Strict Target Compression.
             </p>
         </header>
 
@@ -208,14 +210,14 @@
             <div id="bulk-results-container" class="space-y-3"></div>
         </div>
 
-        <!-- ================= 3. ID CARD MAKER SECTION (FRONT & BACK) ================= -->
+        <!-- ================= 3. ID CARD MAKER SECTION (FRONT & BACK WITH CROPPER) ================= -->
         <div id="section-idcard" class="space-y-6 hidden">
             <div class="glass-3d rounded-3xl p-6 sm:p-8">
                 <h3 class="text-base font-black mb-4 text-amber-400 flex items-center">
-                    <i class="fa-solid id-card mr-2"></i> ID Card Front & Back Studio (Aadhar / PAN / Voter ID)
+                    <i class="fa-solid fa-id-card mr-2"></i> Pro ID Card Studio (Crop, 360° Rotate & Target Compress)
                 </h3>
                 <p class="text-xs opacity-80 mb-6 font-medium">
-                    Upar Front photo aur niche Back photo upload karein. Aap rotation aur crop adjustment karne ke baad ek hi target size mein JPG ya PDF generate kar sakte hain.
+                    Aadhar Card ya kisi bhi ID ke Front aur Back side ko alag-alag upload karein. Extra edges ko crop karein, 360 degree rotate karein, aur target KB range ke mutabiq JPG ya PDF mein download karein!
                 </p>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
@@ -223,18 +225,23 @@
                     <div class="glass-3d rounded-2xl p-5 text-center border border-amber-500/30">
                         <p class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-3"><i class="fa-solid fa-arrow-up mr-1"></i> ID Card Front Side</p>
                         <input type="file" id="id-front-input" accept="image/*" class="hidden">
-                        <div id="id-front-drop" onclick="document.getElementById('id-front-input').click()" class="cursor-pointer border-2 border-dashed border-slate-500/4opy hover:border-amber-500 rounded-xl p-6 transition-all">
-                            <div id="id-front-preview-container" class="hidden">
-                                <img id="id-front-preview" class="max-h-40 mx-auto rounded-lg shadow-md object-contain mb-3">
-                                <div class="flex justify-center gap-2">
-                                    <button type="button" onclick="event.stopPropagation(); rotateIdImage('front')" class="bg-slate-700 hover:bg-slate-600 text-amber-400 px-3 py-1 rounded-lg text-xs font-bold">
-                                        <i class="fa-solid fa-rotate-right"></i> Rotate 90°
-                                    </button>
-                                </div>
-                            </div>
+                        <div id="id-front-upload-area" onclick="document.getElementById('id-front-input').click()" class="cursor-pointer border-2 border-dashed border-slate-500/40 hover:border-amber-500 rounded-xl p-6 transition-all">
                             <div id="id-front-placeholder">
                                 <i class="fa-solid fa-id-card text-3xl text-amber-500 mb-2"></i>
                                 <p class="text-xs font-bold">Front Photo Upload Karein</p>
+                            </div>
+                        </div>
+                        <div id="id-front-editor" class="hidden space-y-3">
+                            <div class="max-h-56 overflow-hidden rounded-xl bg-black/45">
+                                <img id="id-front-img-element" class="max-h-56 mx-auto object-contain">
+                            </div>
+                            <div class="flex justify-center gap-2">
+                                <button type="button" onclick="rotateIdCropper('front', 90)" class="bg-slate-700 hover:bg-slate-600 text-amber-400 px-3 py-1.5 rounded-lg text-xs font-bold">
+                                    <i class="fa-solid fa-rotate-right"></i> Rotate 90°
+                                </button>
+                                <button type="button" onclick="resetIdCropper('front')" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold">
+                                    <i class="fa-solid fa-rotate-left"></i> Reset
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -243,18 +250,23 @@
                     <div class="glass-3d rounded-2xl p-5 text-center border border-amber-500/30">
                         <p class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-3"><i class="fa-solid fa-arrow-down mr-1"></i> ID Card Back Side</p>
                         <input type="file" id="id-back-input" accept="image/*" class="hidden">
-                        <div id="id-back-drop" onclick="document.getElementById('id-back-input').click()" class="cursor-pointer border-2 border-dashed border-slate-500/40 hover:border-amber-500 rounded-xl p-6 transition-all">
-                            <div id="id-back-preview-container" class="hidden">
-                                <img id="id-back-preview" class="max-h-40 mx-auto rounded-lg shadow-md object-contain mb-3">
-                                <div class="flex justify-center gap-2">
-                                    <button type="button" onclick="event.stopPropagation(); rotateIdImage('back')" class="bg-slate-700 hover:bg-slate-600 text-amber-400 px-3 py-1 rounded-lg text-xs font-bold">
-                                        <i class="fa-solid fa-rotate-right"></i> Rotate 90°
-                                    </button>
-                                </div>
-                            </div>
+                        <div id="id-back-upload-area" onclick="document.getElementById('id-back-input').click()" class="cursor-pointer border-2 border-dashed border-slate-500/40 hover:border-amber-500 rounded-xl p-6 transition-all">
                             <div id="id-back-placeholder">
                                 <i class="fa-solid fa-id-card text-3xl text-amber-500 mb-2"></i>
                                 <p class="text-xs font-bold">Back Photo Upload Karein</p>
+                            </div>
+                        </div>
+                        <div id="id-back-editor" class="hidden space-y-3">
+                            <div class="max-h-56 overflow-hidden rounded-xl bg-black/45">
+                                <img id="id-back-img-element" class="max-h-56 mx-auto object-contain">
+                            </div>
+                            <div class="flex justify-center gap-2">
+                                <button type="button" onclick="rotateIdCropper('back', 90)" class="bg-slate-700 hover:bg-slate-600 text-amber-400 px-3 py-1.5 rounded-lg text-xs font-bold">
+                                    <i class="fa-solid fa-rotate-right"></i> Rotate 90°
+                                </button>
+                                <button type="button" onclick="resetIdCropper('back')" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold">
+                                    <i class="fa-solid fa-rotate-left"></i> Reset
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -501,7 +513,7 @@
             
             try {
                 if (format === 'application/pdf') {
-                    singleCompressedBlob = await createPdfBlobFromSingle(singleFile, singleRotationAngle);
+                    singleCompressedBlob = await createPdfBlobFromSingle(singleFile, singleRotationAngle, minBytes, maxBytes);
                 } else {
                     singleCompressedBlob = await resizeToStrictRange(singleFile, minBytes, maxBytes, format, singleRotationAngle);
                 }
@@ -590,7 +602,7 @@
                     let blob;
                     let ext;
                     if (format === 'application/pdf') {
-                        blob = await createPdfBlobFromSingle(file, 0);
+                        blob = await createPdfBlobFromSingle(file, 0, minBytes, maxBytes);
                         ext = 'pdf';
                     } else {
                         blob = await resizeToStrictRange(file, minBytes, maxBytes, format, 0);
@@ -626,86 +638,64 @@
         }
 
 
-        // ================= 3. ID CARD MAKER LOGIC =================
-        let idFrontFile = null;
-        let idBackFile = null;
-        let idFrontRotation = 0;
-        let idBackRotation = 0;
+        // ================= 3. ID CARD MAKER LOGIC (CROPPER.JS) =================
+        let frontCropper = null;
+        let backCropper = null;
         let finalIdBlob = null;
 
-        document.getElementById('id-front-input').addEventListener('change', (e) => handleIdFile(e.target.files[0], 'front'));
-        document.getElementById('id-back-input').addEventListener('change', (e) => handleIdFile(e.target.files[0], 'back'));
+        document.getElementById('id-front-input').addEventListener('change', (e) => initCropper(e.target.files[0], 'front'));
+        document.getElementById('id-back-input').addEventListener('change', (e) => initCropper(e.target.files[0], 'back'));
 
-        function handleIdFile(file, type) {
+        function initCropper(file, type) {
             if (!file || !file.type.startsWith('image/')) return;
             const reader = new FileReader();
             reader.onload = (e) => {
                 if (type === 'front') {
-                    idFrontFile = file;
-                    idFrontRotation = 0;
-                    document.getElementById('id-front-preview').src = e.target.result;
-                    document.getElementById('id-front-preview-container').classList.remove('hidden');
                     document.getElementById('id-front-placeholder').classList.add('hidden');
+                    document.getElementById('id-front-upload-area').classList.add('hidden');
+                    document.getElementById('id-front-editor').classList.remove('hidden');
+                    const imgEl = document.getElementById('id-front-img-element');
+                    imgEl.src = e.target.result;
+                    if (frontCropper) frontCropper.destroy();
+                    frontCropper = new Cropper(imgEl, { viewMode: 1, autoCropArea: 0.95, responsive: true });
                 } else {
-                    idBackFile = file;
-                    idBackRotation = 0;
-                    document.getElementById('id-back-preview').src = e.target.result;
-                    document.getElementById('id-back-preview-container').classList.remove('hidden');
                     document.getElementById('id-back-placeholder').classList.add('hidden');
+                    document.getElementById('id-back-upload-area').classList.add('hidden');
+                    document.getElementById('id-back-editor').classList.remove('hidden');
+                    const imgEl = document.getElementById('id-back-img-element');
+                    imgEl.src = e.target.result;
+                    if (backCropper) backCropper.destroy();
+                    backCropper = new Cropper(imgEl, { viewMode: 1, autoCropArea: 0.95, responsive: true });
                 }
                 checkIdCardReady();
             };
             reader.readAsDataURL(file);
         }
 
-        function rotateIdImage(type) {
-            if (type === 'front' && idFrontFile) {
-                idFrontRotation = (idFrontRotation + 90) % 360;
-                rotateAndShow(idFrontFile, idFrontRotation, 'id-front-preview');
-            } else if (type === 'back' && idBackFile) {
-                idBackRotation = (idBackRotation + 90) % 360;
-                rotateAndShow(idBackFile, idBackRotation, 'id-back-preview');
-            }
+        function rotateIdCropper(type, deg) {
+            if (type === 'front' && frontCropper) frontCropper.rotate(deg);
+            if (type === 'back' && backCropper) backCropper.rotate(deg);
         }
 
-        function rotateAndShow(file, angle, imgId) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    if (angle === 90 || angle === 270) {
-                        canvas.width = img.height; canvas.height = img.width;
-                    } else {
-                        canvas.width = img.width; canvas.height = img.height;
-                    }
-                    ctx.clearRect(0,0,canvas.width,canvas.height);
-                    ctx.save();
-                    ctx.translate(canvas.width/2, canvas.height/2);
-                    ctx.rotate(angle * Math.PI / 180);
-                    ctx.drawImage(img, -img.width/2, -img.height/2);
-                    ctx.restore();
-                    document.getElementById(imgId).src = canvas.toDataURL();
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+        function resetIdCropper(type) {
+            if (type === 'front' && frontCropper) frontCropper.reset();
+            if (type === 'back' && backCropper) backCropper.reset();
         }
 
         function checkIdCardReady() {
             const btn = document.getElementById('id-process-btn');
             const status = document.getElementById('id-status');
-            if (idFrontFile && idBackFile) {
+            if (document.getElementById('id-front-editor').classList.contains('hidden') === false &&
+                document.getElementById('id-back-editor').classList.contains('hidden') === false) {
                 btn.disabled = false;
                 btn.classList.remove('opacity-50', 'cursor-not-allowed');
                 btn.classList.add('bg-gradient-to-r', 'from-amber-500', 'to-orange-600', 'cursor-pointer');
-                status.textContent = "Dono photos uploaded hain. Ab 'Merge & Compress' par click karein.";
+                status.textContent = "Dono sides cropped hain. Ab 'Merge & Compress' par click karein.";
             }
         }
 
         async function processIdCard() {
-            if (!idFrontFile || !idBackFile) return;
+            if (!frontCropper || !backCropper) return;
             const minKB = parseFloat(document.getElementById('min-size-input').value);
             const maxKB = parseFloat(document.getElementById('max-size-input').value);
             const format = document.getElementById('format-select').value;
@@ -717,12 +707,29 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Merging & Compressing...';
 
             try {
-                // Step 1: Render Front & Back onto a single vertical canvas with a gap
-                const mergedCanvas = await createVerticalMergedCanvas(idFrontFile, idFrontRotation, idBackFile, idBackRotation);
-                
-                // Step 2: Compress or convert to PDF
+                // Get cropped canvases from cropper instances
+                const canvas1 = frontCropper.getCroppedCanvas({ imageSmoothingQuality: 'high' });
+                const canvas2 = backCropper.getCroppedCanvas({ imageSmoothingQuality: 'high' });
+
+                // Merge vertically with a 3% clean gap
+                const targetWidth = Math.max(canvas1.width, canvas2.width);
+                const h1 = Math.round((canvas1.height * targetWidth) / canvas1.width);
+                const h2 = Math.round((canvas2.height * targetWidth) / canvas2.width);
+                const gap = Math.round(targetWidth * 0.03);
+
+                const mergedCanvas = document.createElement('canvas');
+                mergedCanvas.width = targetWidth;
+                mergedCanvas.height = h1 + h2 + gap;
+                const fCtx = mergedCanvas.getContext('2d');
+
+                fCtx.fillStyle = '#FFFFFF';
+                fCtx.fillRect(0, 0, mergedCanvas.width, mergedCanvas.height);
+                fCtx.drawImage(canvas1, 0, 0, targetWidth, h1);
+                fCtx.drawImage(canvas2, 0, h1 + gap, targetWidth, h2);
+
+                // Compress or convert to PDF with strict target size
                 if (format === 'application/pdf') {
-                    finalIdBlob = await createPdfBlobFromCanvas(mergedCanvas);
+                    finalIdBlob = await createPdfBlobFromCanvas(mergedCanvas, minBytes, maxBytes);
                 } else {
                     finalIdBlob = await compressCanvasToStrictRange(mergedCanvas, minBytes, maxBytes, format);
                 }
@@ -741,62 +748,6 @@
 
             btn.disabled = false;
             btn.innerHTML = '<i class="fa-solid fa-bolt"></i> Merge & Compress ID Card';
-        }
-
-        function createVerticalMergedCanvas(file1, rot1, file2, rot2) {
-            return new Promise((resolve) => {
-                const img1 = new Image();
-                const img2 = new Image();
-                
-                const loadImg = (file, rot, callback) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const img = new Image();
-                        img.onload = () => {
-                            const canvas = document.createElement('canvas');
-                            const ctx = canvas.getContext('2d');
-                            if (rot === 90 || rot === 270) {
-                                canvas.width = img.height; canvas.height = img.width;
-                            } else {
-                                canvas.width = img.width; canvas.height = img.height;
-                            }
-                            ctx.fillStyle = '#FFFFFF';
-                            ctx.fillRect(0, 0, canvas.width, canvas.height);
-                            ctx.save();
-                            ctx.translate(canvas.width/2, canvas.height/2);
-                            ctx.rotate(rot * Math.PI / 180);
-                            ctx.drawImage(img, -img.width/2, -img.height/2);
-                            ctx.restore();
-                            callback(canvas);
-                        };
-                        img.src = e.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                };
-
-                loadImg(file1, rot1, (canvas1) => {
-                    loadImg(file2, rot2, (canvas2) => {
-                        // Standardize width to max width among both
-                        const targetWidth = Math.max(canvas1.width, canvas2.width);
-                        const h1 = Math.round((canvas1.height * targetWidth) / canvas1.width);
-                        const h2 = Math.round((canvas2.height * targetWidth) / canvas2.width);
-                        const gap = Math.round(targetWidth * 0.03); // 3% gap between front and back
-
-                        const finalCanvas = document.createElement('canvas');
-                        finalCanvas.width = targetWidth;
-                        finalCanvas.height = h1 + h2 + gap;
-                        const fCtx = finalCanvas.getContext('2d');
-
-                        fCtx.fillStyle = '#FFFFFF';
-                        fCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
-                        
-                        fCtx.drawImage(canvas1, 0, 0, targetWidth, h1);
-                        fCtx.drawImage(canvas2, 0, h1 + gap, targetWidth, h2);
-
-                        resolve(finalCanvas);
-                    });
-                });
-            });
         }
 
         function downloadIdCardResult() {
@@ -902,22 +853,28 @@
             });
         }
 
-        function createPdfBlobFromCanvas(canvas) {
+        function createPdfBlobFromCanvas(canvas, minBytes, maxBytes) {
             return new Promise(async (resolve) => {
-                const { jsPDF } = window.jspdf;
-                const imgData = canvas.toDataURL('image/jpeg', 0.92);
-                const pdf = new jsPDF({
-                    orientation: canvas.width > canvas.height ? 'l' : 'p',
-                    unit: 'px',
-                    format: [canvas.width, canvas.height]
-                });
-                pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
-                const pdfOutput = pdf.output('blob');
-                resolve(pdfOutput);
+                // First compress canvas to JPEG matching the target KB range
+                const compressedJpegBlob = await compressCanvasToStrictRange(canvas, minBytes, maxBytes, 'image/jpeg');
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64Img = e.target.result;
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF({
+                        orientation: canvas.width > canvas.height ? 'l' : 'p',
+                        unit: 'px',
+                        format: [canvas.width, canvas.height]
+                    });
+                    pdf.addImage(base64Img, 'JPEG', 0, 0, canvas.width, canvas.height);
+                    resolve(pdf.output('blob'));
+                };
+                reader.readAsDataURL(compressedJpegBlob);
             });
         }
 
-        async function createPdfBlobFromSingle(file, rotation) {
+        async function createPdfBlobFromSingle(file, rotation, minBytes, maxBytes) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = async function(e) {
@@ -938,7 +895,7 @@
                         ctx.drawImage(img, -img.width/2, -img.height/2);
                         ctx.restore();
 
-                        const pdfBlob = await createPdfBlobFromCanvas(canvas);
+                        const pdfBlob = await createPdfBlobFromCanvas(canvas, minBytes, maxBytes);
                         resolve(pdfBlob);
                     };
                     img.src = e.target.result;
