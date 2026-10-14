@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="hi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AJ Image Compressor - Galaxy 3D Bulk Resizer</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        galaxy: { 900: '#0b0f19', 800: '#111827', 700: '#1f2937' }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- JSZip & FileSaver -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { transition: background 0.4s ease, color 0.4s ease; }
+        .dark body { background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 50%, #020617 100%); color: #f8fafc; }
+        .light body { background: radial-gradient(circle at 50% 0%, #e0e7ff 0%, #f3f4f6 60%, #ffffff 100%); color: #0f172a; }
+        .dark .glass-3d {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        .light .glass-3d {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        }
+        .glass-input { backdrop-filter: blur(10px); }
+        .dark .glass-input { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #ffffff; }
+        .light .glass-input { background: rgba(241, 245, 249, 0.9); border: 1px solid rgba(0, 0, 0, 0.15); color: #0f172a; }
+        .glass-input:focus { border-color: #f59e0b; outline: none; box-shadow: 0 0 15px rgba(245, 158, 11, 0.3); }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen justify-between p-4 sm:p-8">
+
+    <div class="max-w-5xl mx-auto w-full">
+        <!-- Top Nav with Custom Logo -->
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center gap-3">
+                <a href="#" class="flex items-center gap-3 group">
+                    <img src="images/logo.png" alt="AJ Image Compressor Logo" class="w-12 h-12 object-contain rounded-xl shadow-lg transition-transform group-hover:scale-105">
+                    <div>
+                        <span class="font-black text-lg tracking-wider bg-gradient-to-r from-amber-400 to-pink-500 bg-clip-text text-transparent block">AJ STUDIO</span>
+                        <span class="text-[10px] opacity-60 font-semibold uppercase tracking-wider block">Powered by AJ StoryBook</span>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <!-- Share Tool Button -->
+                <button onclick="openShareModal()" class="glass-3d px-3.5 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all hover:scale-105 shadow-md text-emerald-400">
+                    <i class="fa-solid fa-share-nodes"></i>
+                    <span class="hidden sm:inline">Share</span>
+                </button>
+                <!-- Theme Toggle Button -->
+                <button onclick="toggleTheme()" class="glass-3d px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all hover:scale-105 shadow-md">
+                    <i id="theme-icon" class="fa-solid fa-sun text-amber-400"></i>
+                    <span id="theme-text">Light Mode</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl sm:text-6xl font-black tracking-tight bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 bg-clip-text text-transparent drop-shadow-sm mb-3">
+                AJ IMAGE COMPRESSOR
+            </h1>
+            <p class="text-sm sm:text-base opacity-80 max-w-xl mx-auto font-medium">
+                Bulk Image Resizer. Precision control to match your exact file size range.
+            </p>
+        </header>
+
+        <!-- Settings Panel -->
+        <div class="glass-3d rounded-3xl p-6 sm:p-8 mb-6">
+            <h2 class="text-sm font-bold uppercase tracking-widest text-amber-500 mb-5 flex items-center">
+                <i class="fa-solid fa-sliders mr-2"></i> Compression & Format Settings
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider opacity-80 mb-2">Minimum Target Size (KB)</label>
+                    <div class="relative">
+                        <input type="number" id="min-size-input" value="50" min="1" class="glass-input w-full rounded-2xl px-4 py-3 text-sm font-bold">
+                        <span class="absolute right-4 top-3 text-xs opacity-60 font-semibold">KB</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider opacity-80 mb-2">Maximum Target Size (KB)</label>
+                    <div class="relative">
+                        <input type="number" id="max-size-input" value="100" min="2" class="glass-input w-full rounded-2xl px-4 py-3 text-sm font-bold">
+                        <span class="absolute right-4 top-3 text-xs opacity-60 font-semibold">KB</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider opacity-80 mb-2">Output Format</label>
+                    <select id="format-select" class="glass-input w-full rounded-2xl px-4 py-3 text-sm font-bold cursor-pointer">
+                        <option value="image/jpeg" class="dark:bg-slate-900">JPG / JPEG (Best for size control)</option>
+                        <option value="image/webp" class="dark:bg-slate-900">WEBP (Modern Web Format)</option>
+                        <option value="image/png" class="dark:bg-slate-900">PNG (Lossless Format)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dropzone -->
+        <div class="glass-3d rounded-3xl p-8 sm:p-12 mb-6 text-center border-2 border-dashed border-amber-500/45 hover:border-amber-500 transition-all cursor-pointer group hover:scale-[1.01]" id="drop-zone">
+            <input type="file" id="file-input" multiple accept="image/*" class="hidden">
+            <div onclick="document.getElementById('file-input').click()">
+                <div class="w-20 h-20 mx-auto mb-4 rounded-3xl bg-gradient-to-tr from-amber-500/20 to-pink-500/20 border border-amber-500/30 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xl">
+                    <i class="fa-solid fa-cloud-arrow-up text-amber-500 text-3xl"></i>
+                </div>
+                <p class="text-lg font-bold tracking-wide">Photos yahan drag & drop karein, ya <span class="text-amber-500 underline">Browse karein</span></p>
+                <p class="text-xs opacity-60 mt-2 font-medium">Supports JPG, PNG, WEBP & more (Multiple files allowed)</p>
+            </div>
+        </div>
+
+        <!-- Actions Bar -->
+        <div id="action-bar" class="hidden glass-3d rounded-2xl p-5 mb-6 flex flex-wrap items-center justify-between gap-4 shadow-xl">
+            <div class="text-sm font-bold flex items-center gap-2">
+                <span class="opacity-70">Selected Photos:</span>
+                <span id="total-count" class="bg-amber-500/20 text-amber-500 px-3 py-1 rounded-xl text-sm border border-amber-500/30 font-black">0</span>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <button id="process-btn" onclick="processImages()" class="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-black px-6 py-3 rounded-2xl shadow-lg shadow-orange-500/30 transition-all text-sm flex items-center gap-2 hover:scale-105">
+                    <i class="fa-solid fa-bolt"></i> Start Bulk Processing
+                </button>
+                <button id="download-all-btn" onclick="triggerDownloadZip()" class="hidden bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black px-6 py-3 rounded-2xl shadow-lg shadow-emerald-500/30 transition-all text-sm flex items-center gap-2 hover:scale-105">
+                    <i class="fa-solid fa-file-zipper"></i> Download All (ZIP)
+                </button>
+            </div>
+        </div>
+
+        <!-- Results / File List -->
+        <div id="results-container" class="space-y-3 mb-12"></div>
+    </div>
+
+    <!-- Footer with Protected Links -->
+    <footer class="w-full mt-12 border-t border-slate-500/20 pt-8 pb-8 text-center text-xs glass-3d rounded-3xl">
+        <div class="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div class="text-left">
+                <p class="font-black text-base bg-gradient-to-r from-amber-400 to-pink-500 bg-clip-text text-transparent">AJ IMAGE COMPRESSOR</p>
+                <p class="opacity-70 mt-1 font-medium">Fast, Secure & Local Browser Processing. Powered by AJ StoryBook.</p>
+            </div>
+            
+            <!-- Protected Social Media Links -->
+            <div class="flex items-center gap-4">
+                <a id="insta-link" href="https://instagram.com/ajaudiobook?igsh=amR1bTlyNmVqMHQ3" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 hover:opacity-90 text-white px-5 py-2.5 rounded-2xl font-bold transition-all shadow-lg hover:scale-105">
+                    <i class="fa-brands fa-instagram text-lg"></i>
+                    <span>Instagram</span>
+                </a>
+                <a id="yt-link" href="https://youtube.com/channel/UCTEKfM1NXIn6qiaaPSSYfbg" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 bg-gradient-to-r from-red-600 to-rose-700 hover:opacity-90 text-white px-5 py-2.5 rounded-2xl font-bold transition-all shadow-lg hover:scale-105">
+                    <i class="fa-brands fa-youtube text-lg"></i>
+                    <span>YouTube</span>
+                </a>
+            </div>
+        </div>
+        <div class="opacity-50 text-[11px] mt-6 font-semibold">
+            &copy; 2026 AJ Image Compressor. All rights reserved. Designed for precision bulk image processing.
+        </div>
+    </footer>
+
+    <!-- Force Subscribe Modal Popup -->
+    <div id="sub-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-3d max-w-md w-full rounded-3xl p-6 sm:p-8 text-center shadow-2xl border border-amber-500/30">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-red-600/20 border border-red-500/30 flex items-center justify-center text-red-500 text-3xl animate-bounce">
+                <i class="fa-brands fa-youtube"></i>
+            </div>
+            <h3 class="text-2xl font-black mb-2 bg-gradient-to-r from-amber-400 to-pink-500 bg-clip-text text-transparent">Subscribe Required!</h3>
+            <p id="modal-desc" class="text-sm opacity-80 mb-6 font-medium">
+                Download karne se pehle hamare YouTube channel ko subscribe karna anivarya hai. Kripya niche diye gaye button par click karke support karein!
+            </p>
+            <div class="space-y-3">
+                <a id="modal-yt-btn" href="https://youtube.com/channel/UCTEKfM1NXIn6qiaaPSSYfbg" target="_blank" onclick="markSubscribed()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-brands fa-youtube text-lg"></i> YouTube Channel Subscribe Karein
+                </a>
+                <button id="modal-download-btn" onclick="executeDownload()" disabled class="w-full bg-slate-700 opacity-50 cursor-not-allowed text-white font-bold py-3 px-6 rounded-2xl shadow-lg transition-all text-sm">
+                    🔓 Download Unlock Ho Gaya (Click Here)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal Popup -->
+    <div id="share-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-3d max-w-md w-full rounded-3xl p-6 sm:p-8 text-center shadow-2xl border border-emerald-500/30">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-3xl">
+                <i class="fa-solid fa-share-nodes"></i>
+            </div>
+            <h3 class="text-2xl font-black mb-2 bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">Share AJ Image Compressor</h3>
+            <p class="text-sm opacity-80 mb-6 font-medium">
+                Is free bulk image compressor tool ko apne dosto ke sath share karein aur unka kaam aasaan banayein!
+            </p>
+            <div class="space-y-3">
+                <button onclick="shareOnWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-brands fa-whatsapp text-lg"></i> WhatsApp par Share Karein
+                </button>
+                <button onclick="copyShareLink()" class="w-full bg-slate-700 hover:bg-slate-600 text-amber-400 font-bold py-3 px-6 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm border border-amber-500/30">
+                    <i class="fa-solid fa-copy"></i> Link Clipboard par Copy Karein
+                </button>
+                <button onclick="closeShareModal()" class="w-full text-xs opacity-60 hover:opacity-100 py-2 font-semibold">
+                    Band Karein (Close)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- ANTI-TAMPER SECURITY LOCK SYSTEM ---
+        (function() {
+            const REQUIRED_YT = "UCTEKfM1NXIn6qiaaPSSYfbg";
+            const REQUIRED_INSTA = "ajaudiobook";
+            
+            function verifyIntegrity() {
+                const ytEl = document.getElementById('yt-link');
+                const instaEl = document.getElementById('insta-link');
+                
+                if (!ytEl || !instaEl || 
+                    !ytEl.href.includes(REQUIRED_YT) || 
+                    !instaEl.href.includes(REQUIRED_INSTA)) {
+                    document.body.innerHTML = '<div style="background:#0f172a;color:#ff4444;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:sans-serif;text-align:center;padding:20px;"><h1>⚠️ SECURITY ALERT: Code Tampered!</h1><p>Website ke official social media links ko badla gaya hai. Isliye yeh tool kaam nahi karega.</p></div>';
+                    throw new Error("Tamper detected!");
+                }
+            }
+            setInterval(verifyIntegrity, 2000);
+            window.addEventListener('load', verifyIntegrity);
+        })();
+
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark'); html.classList.add('light');
+                icon.className = 'fa-solid fa-moon text-indigo-600'; text.textContent = 'Dark Mode';
+            } else {
+                html.classList.remove('light'); html.classList.add('dark');
+                icon.className = 'fa-solid fa-sun text-amber-400'; text.textContent = 'Light Mode';
+            }
+        }
+
+        // Safe Share Modal Functions
+        function openShareModal() {
+            document.getElementById('share-modal').classList.remove('hidden');
+        }
+        function closeShareModal() {
+            document.getElementById('share-modal').classList.add('hidden');
+        }
+        function shareOnWhatsApp() {
+            const text = "🚀 Check out this amazing free Bulk Image Compressor created by AJ StoryBook! Resize images strictly between custom KB ranges instantly: " + window.location.href;
+            window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(text), "_blank");
+        }
+        function copyShareLink() {
+            const text = "🚀 Check out this amazing free Bulk Image Compressor created by AJ StoryBook: " + window.location.href;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("🔗 Link copied to clipboard! Aap ise ab kahin bhi paste karke share kar sakte hain.");
+                closeShareModal();
+            }).catch(err => {
+                alert("Link copy nahi ho paya.");
+            });
+        }
+
+        let selectedFiles = [];
+        let processedResults = [];
+        let pendingDownloadCallback = null;
+
+        const fileInput = document.getElementById('file-input');
+        const dropZone = document.getElementById('drop-zone');
+        const actionBar = document.getElementById('action-bar');
+        const totalCount = document.getElementById('total-count');
+        const resultsContainer = document.getElementById('results-container');
+        const downloadAllBtn = document.getElementById('download-all-btn');
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => { e.preventDefault(); dropZone.classList.add('border-amber-500', 'scale-[1.01]'); });
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => { e.preventDefault(); dropZone.classList.remove('border-amber-500', 'scale-[1.01]'); });
+        });
+        dropZone.addEventListener('drop', (e) => handleFiles(e.dataTransfer.files));
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+        function handleFiles(files) {
+            selectedFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+            if (selectedFiles.length > 0) {
+                actionBar.classList.remove('hidden');
+                totalCount.textContent = selectedFiles.length;
+                resultsContainer.innerHTML = '';
+                processedResults = [];
+                downloadAllBtn.classList.add('hidden');
+                
+                selectedFiles.forEach((file, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'glass-3d rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm';
+                    div.id = `file-row-${index}`;
+                    div.innerHTML = `
+                        <div class="flex items-center gap-3 truncate w-full sm:w-auto">
+                            <span class="text-xs bg-amber-500/20 text-amber-500 px-3 py-1 rounded-xl font-mono font-black border border-amber-500/30">${index + 1}</span>
+                            <span class="truncate font-bold">${file.name}</span>
+                        </div>
+                        <div class="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto text-xs opacity-80 border-t sm:border-t-0 border-slate-500/20 pt-2 sm:pt-0">
+                            <span>Original: <strong class="font-black">${(file.size / 1024).toFixed(1)} KB</strong></span>
+                            <span id="status-${index}" class="text-amber-500 font-bold bg-amber-500/10 px-3 py-1 rounded-xl border border-amber-500/30">Ready</span>
+                        </div>
+                    `;
+                    resultsContainer.appendChild(div);
+                });
+            }
+        }
+
+        async function processImages() {
+            const minKB = parseFloat(document.getElementById('min-size-input').value);
+            const maxKB = parseFloat(document.getElementById('max-size-input').value);
+            const mimeType = document.getElementById('format-select').value;
+
+            if (isNaN(minKB) || isNaN(maxKB) || minKB >= maxKB) {
+                alert("Kripya valid Minimum aur Maximum KB ranges daalein!");
+                return;
+            }
+
+            const processBtn = document.getElementById('process-btn');
+            processBtn.disabled = true;
+            processBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Processing...';
+            processedResults = [];
+
+            const minBytes = minKB * 1024;
+            const maxBytes = maxKB * 1024;
+
+            for (let i = 0; i < selectedFiles.length; i++) {
+                const file = selectedFiles[i];
+                const statusSpan = document.getElementById(`status-${i}`);
+                statusSpan.className = "text-amber-500 font-bold bg-amber-500/10 px-3 py-1 rounded-xl border border-amber-500/30";
+                statusSpan.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+
+                try {
+                    let blob = await resizeToStrictRange(file, minBytes, maxBytes, mimeType);
+                    let finalSizeKB = (blob.size / 1024).toFixed(1);
+                    
+                    let ext = mimeType.split('/')[1];
+                    if (ext === 'jpeg') ext = 'jpg';
+
+                    const baseName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+                    const finalFileName = `${baseName}_aj.${ext}`;
+
+                    processedResults.push({ name: finalFileName, blob: blob });
+
+                    statusSpan.className = 'text-emerald-500 font-black bg-emerald-500/10 px-3 py-1 rounded-xl border border-emerald-500/30';
+                    statusSpan.innerHTML = `<i class="fa-solid fa-check mr-1"></i> ${finalSizeKB} KB (${ext.toUpperCase()})`;
+
+                    const row = document.getElementById(`file-row-${i}`);
+                    if (!row.querySelector('.download-single')) {
+                        const btn = document.createElement('button');
+                        btn.className = 'download-single bg-amber-500 hover:bg-amber-600 text-white px-4 py-1.5 rounded-xl text-xs font-black transition-all ml-2 flex items-center gap-1 shadow-md hover:scale-105';
+                        btn.innerHTML = '<i class="fa-solid fa-download"></i> Save';
+                        btn.onclick = () => requestDownload(() => saveAs(blob, finalFileName));
+                        row.querySelector('div:last-child').appendChild(btn);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    statusSpan.className = 'text-rose-500 font-bold bg-rose-500/10 px-3 py-1 rounded-xl border border-rose-500/30';
+                    statusSpan.textContent = 'Error';
+                }
+            }
+
+            processBtn.disabled = false;
+            processBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Start Bulk Processing';
+            if (processedResults.length > 0) {
+                downloadAllBtn.classList.remove('hidden');
+            }
+        }
+
+        function resizeToStrictRange(file, minBytes, maxBytes, mimeType) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = async function() {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        let width = img.width;
+                        let height = img.height;
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.fillStyle = '#FFFFFF';
+                        ctx.fillRect(0, 0, width, height);
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        const getBlob = (q, cW = canvas.width, cH = canvas.height) => {
+                            const tempCanvas = document.createElement('canvas');
+                            tempCanvas.width = cW; tempCanvas.height = cH;
+                            const tCtx = tempCanvas.getContext('2d');
+                            tCtx.fillStyle = '#FFFFFF'; tCtx.fillRect(0, 0, cW, cH);
+                            tCtx.drawImage(img, 0, 0, cW, cH);
+                            return new Promise(res => tempCanvas.toBlob(res, mimeType, q));
+                        };
+
+                        let quality = 0.92;
+                        let blob = await getBlob(quality);
+
+                        if (blob.size > maxBytes) {
+                            let low = 0.01, high = 0.98;
+                            for (let i = 0; i < 10; i++) {
+                                quality = (low + high) / 2;
+                                blob = await getBlob(quality);
+                                if (blob.size > maxBytes) high = quality;
+                                else if (blob.size < minBytes) low = quality;
+                                else break;
+                            }
+                            let scale = 0.9;
+                            while (blob.size > maxBytes && (width * scale) > 100) {
+                                let newW = Math.round(width * scale);
+                                let newH = Math.round(height * scale);
+                                blob = await getBlob(quality, newW, newH);
+                                scale -= 0.08;
+                            }
+                        }
+
+                        if (blob.size < minBytes) {
+                            let scale = 1.25;
+                            while (blob.size < minBytes && scale <= 3.5) {
+                                let newW = Math.round(width * scale);
+                                let newH = Math.round(height * scale);
+                                blob = await getBlob(0.98, newW, newH);
+                                if (blob.size >= minBytes && blob.size <= maxBytes) break;
+                                scale += 0.25;
+                            }
+                            if (blob.size < minBytes) {
+                                let bytesToPad = Math.ceil(minBytes - blob.size + 1024);
+                                blob = new Blob([blob, new Uint8Array(bytesToPad)], { type: mimeType });
+                            }
+                        }
+                        resolve(blob);
+                    };
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Force Subscribe Modal Control Logic
+        function requestDownload(callback) {
+            pendingDownloadCallback = callback;
+            if (sessionStorage.getItem('aj_subscribed') === 'true') {
+                callback();
+            } else {
+                document.getElementById('sub-modal').classList.remove('hidden');
+            }
+        }
+
+        function markSubscribed() {
+            const dlBtn = document.getElementById('modal-download-btn');
+            const descEl = document.getElementById('modal-desc');
+            
+            descEl.innerHTML = '🎉 <strong class="text-amber-400">Thank you for supporting AJ StoryBook!</strong> Your download is now unlocked.';
+            dlBtn.disabled = false;
+            dlBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            dlBtn.classList.add('bg-gradient-to-r', 'from-emerald-500', 'to-teal-600', 'hover:from-emerald-600', 'hover:to-teal-700', 'cursor-pointer');
+            dlBtn.textContent = '🔓 Ab Download Karein (Click Here)';
+            sessionStorage.setItem('aj_subscribed', 'true');
+        }
+
+        function executeDownload() {
+            document.getElementById('sub-modal').classList.add('hidden');
+            if (pendingDownloadCallback) {
+                pendingDownloadCallback();
+                pendingDownloadCallback = null;
+            }
+        }
+
+        function triggerDownloadZip() {
+            requestDownload(async () => {
+                if (processedResults.length === 0) return;
+                const zip = new JSZip();
+                const folder = zip.folder("AJ_Compressed_Photos");
+                processedResults.forEach((item) => {
+                    folder.file(item.name, item.blob);
+                });
+                downloadAllBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Zipping...';
+                downloadAllBtn.disabled = true;
+                const content = await zip.generateAsync({ type: "blob" });
+                saveAs(content, "AJ_Compressed_Photos.zip");
+                downloadAllBtn.innerHTML = '<i class="fa-solid fa-file-zipper"></i> Download All (ZIP)';
+                downloadAllBtn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>
