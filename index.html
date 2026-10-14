@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AJ Image Compressor - Pro Dual Mode Resizer</title>
+    <title>AJ Image Compressor & ID Card Studio Pro</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -18,9 +18,10 @@
             }
         }
     </script>
-    <!-- JSZip & FileSaver -->
+    <!-- JSZip, FileSaver & jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -78,21 +79,24 @@
         <!-- Main Header -->
         <header class="text-center mb-6">
             <h1 class="text-3xl sm:text-5xl font-black tracking-tight bg-gradient-to-r from-amber-400 via-orange-500 to-pink-500 bg-clip-text text-transparent drop-shadow-sm mb-2">
-                AJ IMAGE COMPRESSOR
+                AJ IMAGE COMPRESSOR & ID STUDIO
             </h1>
             <p class="text-xs sm:text-sm opacity-80 max-w-xl mx-auto font-medium">
-                Pro Grade Dual-Mode Image Optimizer with Precision KB Targeting & Visual Comparison.
+                Pro Grade Multi-Mode Optimizer. Single, Bulk & ID Card Front-Back Merger with PDF Export.
             </p>
         </header>
 
-        <!-- Mode Switcher Tabs -->
+        <!-- Mode Switcher Tabs (3 Tabs) -->
         <div class="flex justify-center mb-6">
-            <div class="glass-3d p-1.5 rounded-2xl flex gap-2 max-w-sm w-full">
-                <button id="tab-single" onclick="switchMode('single')" class="tab-btn active flex-1 py-2.5 px-4 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-image"></i> Single Image Mode
+            <div class="glass-3d p-1.5 rounded-2xl flex flex-wrap gap-2 max-w-2xl w-full justify-center">
+                <button id="tab-single" onclick="switchMode('single')" class="tab-btn active flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-image"></i> Single Mode
                 </button>
-                <button id="tab-bulk" onclick="switchMode('bulk')" class="tab-btn flex-1 py-2.5 px-4 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 opacity-75">
-                    <i class="fa-solid fa-images"></i> Bulk Image Mode
+                <button id="tab-bulk" onclick="switchMode('bulk')" class="tab-btn flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 opacity-75">
+                    <i class="fa-solid fa-images"></i> Bulk Mode
+                </button>
+                <button id="tab-idcard" onclick="switchMode('idcard')" class="tab-btn flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 opacity-75">
+                    <i class="fa-solid fa-id-card"></i> ID Card Maker
                 </button>
             </div>
         </div>
@@ -120,15 +124,16 @@
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider opacity-80 mb-2">Output Format</label>
                     <select id="format-select" class="glass-input w-full rounded-2xl px-4 py-3 text-sm font-bold cursor-pointer">
-                        <option value="image/jpeg" class="dark:bg-slate-900">JPG / JPEG (Best for size control)</option>
-                        <option value="image/webp" class="dark:bg-slate-900">WEBP (Modern Web Format)</option>
-                        <option value="image/png" class="dark:bg-slate-900">PNG (Lossless Format)</option>
+                        <option value="image/jpeg" class="dark:bg-slate-900">JPG / JPEG</option>
+                        <option value="image/webp" class="dark:bg-slate-900">WEBP (Modern Web)</option>
+                        <option value="application/pdf" class="dark:bg-slate-900">PDF Document</option>
+                        <option value="image/png" class="dark:bg-slate-900">PNG (Lossless)</option>
                     </select>
                 </div>
             </div>
         </div>
 
-        <!-- ================= SINGLE MODE SECTION ================= -->
+        <!-- ================= 1. SINGLE MODE SECTION ================= -->
         <div id="section-single" class="space-y-6">
             <div class="glass-3d rounded-3xl p-8 sm:p-10 text-center border-2 border-dashed border-amber-500/45 hover:border-amber-500 transition-all cursor-pointer group" id="single-drop-zone">
                 <input type="file" id="single-file-input" accept="image/*" class="hidden">
@@ -137,11 +142,9 @@
                         <i class="fa-solid fa-cloud-arrow-up text-amber-500 text-2xl"></i>
                     </div>
                     <p class="text-base font-bold tracking-wide">Ek photo yahan drop karein, ya <span class="text-amber-500 underline">Browse karein</span></p>
-                    <p class="text-xs opacity-60 mt-1 font-medium">Supports JPG, PNG, WEBP</p>
                 </div>
             </div>
 
-            <!-- Single Editor Workspace -->
             <div id="single-editor" class="hidden glass-3d rounded-3xl p-6 sm:p-8 space-y-6">
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-500/20 pb-4">
                     <div class="flex items-center gap-4">
@@ -158,7 +161,6 @@
                     </div>
                 </div>
 
-                <!-- Live Result & Actions -->
                 <div class="flex flex-wrap items-center justify-between gap-4">
                     <div>
                         <p class="text-xs opacity-70">Processed Status:</p>
@@ -169,14 +171,14 @@
                             <i class="fa-solid fa-bolt"></i> Compress Image
                         </button>
                         <button id="single-download-btn" onclick="downloadSingleImage()" disabled class="bg-slate-700 opacity-50 cursor-not-allowed text-white font-black px-5 py-2.5 rounded-xl text-xs shadow-lg transition-all flex items-center gap-2">
-                            <i class="fa-solid fa-download"></i> Save Image
+                            <i class="fa-solid fa-download"></i> Save File
                         </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ================= BULK MODE SECTION ================= -->
+        <!-- ================= 2. BULK MODE SECTION ================= -->
         <div id="section-bulk" class="space-y-6 hidden">
             <div class="glass-3d rounded-3xl p-8 sm:p-10 text-center border-2 border-dashed border-amber-500/45 hover:border-amber-500 transition-all cursor-pointer group" id="bulk-drop-zone">
                 <input type="file" id="bulk-file-input" multiple accept="image/*" class="hidden">
@@ -185,11 +187,9 @@
                         <i class="fa-solid fa-cloud-arrow-up text-amber-500 text-2xl"></i>
                     </div>
                     <p class="text-base font-bold tracking-wide">Multiple photos yahan drop karein, ya <span class="text-amber-500 underline">Browse karein</span></p>
-                    <p class="text-xs opacity-60 mt-1 font-medium">Batch processing for unlimited photos</p>
                 </div>
             </div>
 
-            <!-- Bulk Actions Bar -->
             <div id="bulk-action-bar" class="hidden glass-3d rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 shadow-xl">
                 <div class="text-sm font-bold flex items-center gap-2">
                     <span class="opacity-70">Total Selected:</span>
@@ -205,8 +205,76 @@
                 </div>
             </div>
 
-            <!-- Bulk Results List -->
             <div id="bulk-results-container" class="space-y-3"></div>
+        </div>
+
+        <!-- ================= 3. ID CARD MAKER SECTION (FRONT & BACK) ================= -->
+        <div id="section-idcard" class="space-y-6 hidden">
+            <div class="glass-3d rounded-3xl p-6 sm:p-8">
+                <h3 class="text-base font-black mb-4 text-amber-400 flex items-center">
+                    <i class="fa-solid id-card mr-2"></i> ID Card Front & Back Studio (Aadhar / PAN / Voter ID)
+                </h3>
+                <p class="text-xs opacity-80 mb-6 font-medium">
+                    Upar Front photo aur niche Back photo upload karein. Aap rotation aur crop adjustment karne ke baad ek hi target size mein JPG ya PDF generate kar sakte hain.
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                    <!-- Front Box -->
+                    <div class="glass-3d rounded-2xl p-5 text-center border border-amber-500/30">
+                        <p class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-3"><i class="fa-solid fa-arrow-up mr-1"></i> ID Card Front Side</p>
+                        <input type="file" id="id-front-input" accept="image/*" class="hidden">
+                        <div id="id-front-drop" onclick="document.getElementById('id-front-input').click()" class="cursor-pointer border-2 border-dashed border-slate-500/4opy hover:border-amber-500 rounded-xl p-6 transition-all">
+                            <div id="id-front-preview-container" class="hidden">
+                                <img id="id-front-preview" class="max-h-40 mx-auto rounded-lg shadow-md object-contain mb-3">
+                                <div class="flex justify-center gap-2">
+                                    <button type="button" onclick="event.stopPropagation(); rotateIdImage('front')" class="bg-slate-700 hover:bg-slate-600 text-amber-400 px-3 py-1 rounded-lg text-xs font-bold">
+                                        <i class="fa-solid fa-rotate-right"></i> Rotate 90°
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="id-front-placeholder">
+                                <i class="fa-solid fa-id-card text-3xl text-amber-500 mb-2"></i>
+                                <p class="text-xs font-bold">Front Photo Upload Karein</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Back Box -->
+                    <div class="glass-3d rounded-2xl p-5 text-center border border-amber-500/30">
+                        <p class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-3"><i class="fa-solid fa-arrow-down mr-1"></i> ID Card Back Side</p>
+                        <input type="file" id="id-back-input" accept="image/*" class="hidden">
+                        <div id="id-back-drop" onclick="document.getElementById('id-back-input').click()" class="cursor-pointer border-2 border-dashed border-slate-500/40 hover:border-amber-500 rounded-xl p-6 transition-all">
+                            <div id="id-back-preview-container" class="hidden">
+                                <img id="id-back-preview" class="max-h-40 mx-auto rounded-lg shadow-md object-contain mb-3">
+                                <div class="flex justify-center gap-2">
+                                    <button type="button" onclick="event.stopPropagation(); rotateIdImage('back')" class="bg-slate-700 hover:bg-slate-600 text-amber-400 px-3 py-1 rounded-lg text-xs font-bold">
+                                        <i class="fa-solid fa-rotate-right"></i> Rotate 90°
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="id-back-placeholder">
+                                <i class="fa-solid fa-id-card text-3xl text-amber-500 mb-2"></i>
+                                <p class="text-xs font-bold">Back Photo Upload Karein</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ID Card Actions -->
+                <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-500/20">
+                    <div>
+                        <p id="id-status" class="text-xs font-bold text-amber-400">Front aur Back dono photos upload karein</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="processIdCard()" id="id-process-btn" disabled class="bg-slate-700 opacity-50 cursor-not-allowed text-white font-black px-6 py-3 rounded-xl text-xs shadow-lg transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-bolt"></i> Merge & Compress ID Card
+                        </button>
+                        <button onclick="downloadIdCardResult()" id="id-download-btn" disabled class="bg-emerald-600 opacity-50 cursor-not-allowed text-white font-black px-6 py-3 rounded-xl text-xs shadow-lg transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-download"></i> Download Final ID File
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -230,7 +298,7 @@
             </div>
         </div>
         <div class="opacity-50 text-[11px] mt-6 font-semibold">
-            &copy; 2026 AJ Image Compressor. All rights reserved. Professional Dual Mode Tool.
+            &copy; 2026 AJ Image Compressor. All rights reserved. Professional Multi-Mode Studio.
         </div>
     </footer>
 
@@ -255,29 +323,6 @@
         </div>
     </div>
 
-    <!-- Before / After Preview Modal -->
-    <div id="preview-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-3d max-w-3xl w-full rounded-3xl p-6 relative">
-            <button onclick="closePreviewModal()" class="absolute right-5 top-5 w-10 h-10 rounded-full bg-slate-700/50 flex items-center justify-center text-white font-bold hover:bg-rose-600 transition-colors">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <h3 class="text-xl font-black mb-4 text-amber-400"><i class="fa-solid fa-eye mr-2"></i> Quality Comparison Preview</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <div class="text-center">
-                    <p class="text-xs font-bold opacity-70 mb-2">Original Image</p>
-                    <img id="preview-orig-img" src="" class="max-h-64 mx-auto rounded-xl border border-slate-500/30 object-contain">
-                </div>
-                <div class="text-center">
-                    <p class="text-xs font-bold opacity-70 mb-2">Compressed Image</p>
-                    <img id="preview-comp-img" src="" class="max-h-64 mx-auto rounded-xl border border-emerald-500/30 object-contain">
-                </div>
-            </div>
-            <button onclick="closePreviewModal()" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-2.5 rounded-xl text-sm">
-                Band Karein (Close)
-            </button>
-        </div>
-    </div>
-
     <!-- Share Modal Popup -->
     <div id="share-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         <div class="glass-3d max-w-md w-full rounded-3xl p-6 sm:p-8 text-center shadow-2xl border border-emerald-500/30">
@@ -286,7 +331,7 @@
             </div>
             <h3 class="text-2xl font-black mb-2 bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">Share AJ Image Compressor</h3>
             <p class="text-sm opacity-80 mb-6 font-medium">
-                Is free dual-mode image compressor tool ko apne dosto ke sath share karein!
+                Is free dual-mode & ID card studio tool ko apne dosto ke sath share karein!
             </p>
             <div class="space-y-3">
                 <button onclick="shareOnWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm">
@@ -349,23 +394,33 @@
             }
         }
 
-        // Mode Switcher Logic
+        // Mode Switcher (3 Tabs)
         function switchMode(mode) {
             const tabSingle = document.getElementById('tab-single');
             const tabBulk = document.getElementById('tab-bulk');
+            const tabIdCard = document.getElementById('tab-idcard');
+            
             const secSingle = document.getElementById('section-single');
             const secBulk = document.getElementById('section-bulk');
+            const secIdCard = document.getElementById('section-idcard');
+
+            tabSingle.className = 'tab-btn flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 opacity-75';
+            tabBulk.className = 'tab-btn flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 opacity-75';
+            tabIdCard.className = 'tab-btn flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 opacity-75';
+
+            secSingle.classList.add('hidden');
+            secBulk.classList.add('hidden');
+            secIdCard.classList.add('hidden');
 
             if (mode === 'single') {
                 tabSingle.classList.add('active'); tabSingle.classList.remove('opacity-75');
-                tabBulk.classList.remove('active'); tabBulk.classList.add('opacity-75');
                 secSingle.classList.remove('hidden');
-                secBulk.classList.add('hidden');
-            } else {
+            } else if (mode === 'bulk') {
                 tabBulk.classList.add('active'); tabBulk.classList.remove('opacity-75');
-                tabSingle.classList.remove('active'); tabSingle.classList.add('opacity-75');
                 secBulk.classList.remove('hidden');
-                secSingle.classList.add('hidden');
+            } else if (mode === 'idcard') {
+                tabIdCard.classList.add('active'); tabIdCard.classList.remove('opacity-75');
+                secIdCard.classList.remove('hidden');
             }
         }
 
@@ -373,7 +428,7 @@
         function openShareModal() { document.getElementById('share-modal').classList.remove('hidden'); }
         function closeShareModal() { document.getElementById('share-modal').classList.add('hidden'); }
         function shareOnWhatsApp() {
-            const text = "🚀 Check out this amazing free Dual-Mode Image Compressor created by AJ StoryBook! " + window.location.href;
+            const text = "🚀 Check out this amazing free ID Card Studio & Image Compressor created by AJ StoryBook! " + window.location.href;
             window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(text), "_blank");
         }
         function copyShareLink() {
@@ -382,15 +437,13 @@
                 closeShareModal();
             });
         }
-        function closePreviewModal() { document.getElementById('preview-modal').classList.add('hidden'); }
 
-        // ================= SINGLE MODE LOGIC =================
+        // ================= 1. SINGLE MODE LOGIC =================
         let singleFile = null;
         let singleCompressedBlob = null;
         let singleRotationAngle = 0;
 
-        const singleFileInput = document.getElementById('single-file-input');
-        singleFileInput.addEventListener('change', (e) => handleSingleFile(e.target.files[0]));
+        document.getElementById('single-file-input').addEventListener('change', (e) => handleSingleFile(e.target.files[0]));
 
         function handleSingleFile(file) {
             if (!file || !file.type.startsWith('image/')) return;
@@ -400,9 +453,7 @@
             document.getElementById('single-orig-size').textContent = (file.size / 1024).toFixed(1) + ' KB';
             
             const reader = new FileReader();
-            reader.onload = (e) => {
-                document.getElementById('single-preview-thumb').src = e.target.result;
-            };
+            reader.onload = (e) => { document.getElementById('single-preview-thumb').src = e.target.result; };
             reader.readAsDataURL(file);
 
             document.getElementById('single-editor').classList.remove('hidden');
@@ -442,14 +493,18 @@
             if (!singleFile) return;
             const minKB = parseFloat(document.getElementById('min-size-input').value);
             const maxKB = parseFloat(document.getElementById('max-size-input').value);
-            const mimeType = document.getElementById('format-select').value;
+            const format = document.getElementById('format-select').value;
             const minBytes = minKB * 1024;
             const maxBytes = maxKB * 1024;
 
             document.getElementById('single-status-text').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
             
             try {
-                singleCompressedBlob = await resizeToStrictRange(singleFile, minBytes, maxBytes, mimeType, singleRotationAngle);
+                if (format === 'application/pdf') {
+                    singleCompressedBlob = await createPdfBlobFromSingle(singleFile, singleRotationAngle);
+                } else {
+                    singleCompressedBlob = await resizeToStrictRange(singleFile, minBytes, maxBytes, format, singleRotationAngle);
+                }
                 const finalKB = (singleCompressedBlob.size / 1024).toFixed(1);
                 document.getElementById('single-status-text').innerHTML = `<span class="text-emerald-400 font-black">Success! Final Size: ${finalKB} KB</span>`;
                 
@@ -466,7 +521,8 @@
         function downloadSingleImage() {
             if (!singleCompressedBlob) return;
             requestDownload(() => {
-                let ext = document.getElementById('format-select').value.split('/')[1];
+                const format = document.getElementById('format-select').value;
+                let ext = format === 'application/pdf' ? 'pdf' : format.split('/')[1];
                 if (ext === 'jpeg') ext = 'jpg';
                 const baseName = singleFile.name.substring(0, singleFile.name.lastIndexOf('.')) || singleFile.name;
                 saveAs(singleCompressedBlob, `${baseName}_aj.${ext}`);
@@ -474,12 +530,11 @@
         }
 
 
-        // ================= BULK MODE LOGIC =================
+        // ================= 2. BULK MODE LOGIC =================
         let selectedFiles = [];
         let processedResults = [];
 
-        const bulkFileInput = document.getElementById('bulk-file-input');
-        bulkFileInput.addEventListener('change', (e) => handleBulkFiles(e.target.files));
+        document.getElementById('bulk-file-input').addEventListener('change', (e) => handleBulkFiles(e.target.files));
 
         function handleBulkFiles(files) {
             selectedFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
@@ -517,7 +572,7 @@
         async function processBulkImages() {
             const minKB = parseFloat(document.getElementById('min-size-input').value);
             const maxKB = parseFloat(document.getElementById('max-size-input').value);
-            const mimeType = document.getElementById('format-select').value;
+            const format = document.getElementById('format-select').value;
             const minBytes = minKB * 1024;
             const maxBytes = maxKB * 1024;
 
@@ -532,10 +587,17 @@
                 statusSpan.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
                 try {
-                    let blob = await resizeToStrictRange(file, minBytes, maxBytes, mimeType, 0);
+                    let blob;
+                    let ext;
+                    if (format === 'application/pdf') {
+                        blob = await createPdfBlobFromSingle(file, 0);
+                        ext = 'pdf';
+                    } else {
+                        blob = await resizeToStrictRange(file, minBytes, maxBytes, format, 0);
+                        ext = format.split('/')[1];
+                        if (ext === 'jpeg') ext = 'jpg';
+                    }
                     let finalSizeKB = (blob.size / 1024).toFixed(1);
-                    let ext = mimeType.split('/')[1];
-                    if (ext === 'jpeg') ext = 'jpg';
                     const baseName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
                     const finalFileName = `${baseName}_aj.${ext}`;
 
@@ -564,7 +626,191 @@
         }
 
 
-        // ================= CORE COMPRESSION ENGINE =================
+        // ================= 3. ID CARD MAKER LOGIC =================
+        let idFrontFile = null;
+        let idBackFile = null;
+        let idFrontRotation = 0;
+        let idBackRotation = 0;
+        let finalIdBlob = null;
+
+        document.getElementById('id-front-input').addEventListener('change', (e) => handleIdFile(e.target.files[0], 'front'));
+        document.getElementById('id-back-input').addEventListener('change', (e) => handleIdFile(e.target.files[0], 'back'));
+
+        function handleIdFile(file, type) {
+            if (!file || !file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (type === 'front') {
+                    idFrontFile = file;
+                    idFrontRotation = 0;
+                    document.getElementById('id-front-preview').src = e.target.result;
+                    document.getElementById('id-front-preview-container').classList.remove('hidden');
+                    document.getElementById('id-front-placeholder').classList.add('hidden');
+                } else {
+                    idBackFile = file;
+                    idBackRotation = 0;
+                    document.getElementById('id-back-preview').src = e.target.result;
+                    document.getElementById('id-back-preview-container').classList.remove('hidden');
+                    document.getElementById('id-back-placeholder').classList.add('hidden');
+                }
+                checkIdCardReady();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function rotateIdImage(type) {
+            if (type === 'front' && idFrontFile) {
+                idFrontRotation = (idFrontRotation + 90) % 360;
+                rotateAndShow(idFrontFile, idFrontRotation, 'id-front-preview');
+            } else if (type === 'back' && idBackFile) {
+                idBackRotation = (idBackRotation + 90) % 360;
+                rotateAndShow(idBackFile, idBackRotation, 'id-back-preview');
+            }
+        }
+
+        function rotateAndShow(file, angle, imgId) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    if (angle === 90 || angle === 270) {
+                        canvas.width = img.height; canvas.height = img.width;
+                    } else {
+                        canvas.width = img.width; canvas.height = img.height;
+                    }
+                    ctx.clearRect(0,0,canvas.width,canvas.height);
+                    ctx.save();
+                    ctx.translate(canvas.width/2, canvas.height/2);
+                    ctx.rotate(angle * Math.PI / 180);
+                    ctx.drawImage(img, -img.width/2, -img.height/2);
+                    ctx.restore();
+                    document.getElementById(imgId).src = canvas.toDataURL();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function checkIdCardReady() {
+            const btn = document.getElementById('id-process-btn');
+            const status = document.getElementById('id-status');
+            if (idFrontFile && idBackFile) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.classList.add('bg-gradient-to-r', 'from-amber-500', 'to-orange-600', 'cursor-pointer');
+                status.textContent = "Dono photos uploaded hain. Ab 'Merge & Compress' par click karein.";
+            }
+        }
+
+        async function processIdCard() {
+            if (!idFrontFile || !idBackFile) return;
+            const minKB = parseFloat(document.getElementById('min-size-input').value);
+            const maxKB = parseFloat(document.getElementById('max-size-input').value);
+            const format = document.getElementById('format-select').value;
+            const minBytes = minKB * 1024;
+            const maxBytes = maxKB * 1024;
+
+            const btn = document.getElementById('id-process-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Merging & Compressing...';
+
+            try {
+                // Step 1: Render Front & Back onto a single vertical canvas with a gap
+                const mergedCanvas = await createVerticalMergedCanvas(idFrontFile, idFrontRotation, idBackFile, idBackRotation);
+                
+                // Step 2: Compress or convert to PDF
+                if (format === 'application/pdf') {
+                    finalIdBlob = await createPdfBlobFromCanvas(mergedCanvas);
+                } else {
+                    finalIdBlob = await compressCanvasToStrictRange(mergedCanvas, minBytes, maxBytes, format);
+                }
+
+                const finalKB = (finalIdBlob.size / 1024).toFixed(1);
+                document.getElementById('id-status').innerHTML = `<span class="text-emerald-400 font-black">ID Card Successfully Created! Size: ${finalKB} KB</span>`;
+
+                const dlBtn = document.getElementById('id-download-btn');
+                dlBtn.disabled = false;
+                dlBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                dlBtn.classList.add('cursor-pointer');
+            } catch (err) {
+                console.error(err);
+                document.getElementById('id-status').textContent = "ID Card processing error!";
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-bolt"></i> Merge & Compress ID Card';
+        }
+
+        function createVerticalMergedCanvas(file1, rot1, file2, rot2) {
+            return new Promise((resolve) => {
+                const img1 = new Image();
+                const img2 = new Image();
+                
+                const loadImg = (file, rot, callback) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+                            if (rot === 90 || rot === 270) {
+                                canvas.width = img.height; canvas.height = img.width;
+                            } else {
+                                canvas.width = img.width; canvas.height = img.height;
+                            }
+                            ctx.fillStyle = '#FFFFFF';
+                            ctx.fillRect(0, 0, canvas.width, canvas.height);
+                            ctx.save();
+                            ctx.translate(canvas.width/2, canvas.height/2);
+                            ctx.rotate(rot * Math.PI / 180);
+                            ctx.drawImage(img, -img.width/2, -img.height/2);
+                            ctx.restore();
+                            callback(canvas);
+                        };
+                        img.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                };
+
+                loadImg(file1, rot1, (canvas1) => {
+                    loadImg(file2, rot2, (canvas2) => {
+                        // Standardize width to max width among both
+                        const targetWidth = Math.max(canvas1.width, canvas2.width);
+                        const h1 = Math.round((canvas1.height * targetWidth) / canvas1.width);
+                        const h2 = Math.round((canvas2.height * targetWidth) / canvas2.width);
+                        const gap = Math.round(targetWidth * 0.03); // 3% gap between front and back
+
+                        const finalCanvas = document.createElement('canvas');
+                        finalCanvas.width = targetWidth;
+                        finalCanvas.height = h1 + h2 + gap;
+                        const fCtx = finalCanvas.getContext('2d');
+
+                        fCtx.fillStyle = '#FFFFFF';
+                        fCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+                        
+                        fCtx.drawImage(canvas1, 0, 0, targetWidth, h1);
+                        fCtx.drawImage(canvas2, 0, h1 + gap, targetWidth, h2);
+
+                        resolve(finalCanvas);
+                    });
+                });
+            });
+        }
+
+        function downloadIdCardResult() {
+            if (!finalIdBlob) return;
+            requestDownload(() => {
+                const format = document.getElementById('format-select').value;
+                let ext = format === 'application/pdf' ? 'pdf' : format.split('/')[1];
+                if (ext === 'jpeg') ext = 'jpg';
+                saveAs(finalIdBlob, `AJ_ID_Card_Front_Back.${ext}`);
+            });
+        }
+
+
+        // ================= HELPER COMPRESSION & PDF ENGINES =================
         function resizeToStrictRange(file, minBytes, maxBytes, mimeType, rotation) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -590,53 +836,111 @@
                         ctx.drawImage(img, -width/2, -height/2);
                         ctx.restore();
 
-                        const getBlob = (q, cW = canvas.width, cH = canvas.height) => {
-                            const tempCanvas = document.createElement('canvas');
-                            tempCanvas.width = cW; tempCanvas.height = cH;
-                            const tCtx = tempCanvas.getContext('2d');
-                            tCtx.fillStyle = '#FFFFFF'; tCtx.fillRect(0, 0, cW, cH);
-                            tCtx.drawImage(canvas, 0, 0, cW, cH, 0, 0, cW, cH);
-                            return new Promise(res => tempCanvas.toBlob(res, mimeType, q));
-                        };
+                        const resCanvas = document.createElement('canvas');
+                        resCanvas.width = canvas.width; resCanvas.height = canvas.height;
+                        resCanvas.getContext('2d').fillStyle = '#FFFFFF';
+                        resCanvas.getContext('2d').fillRect(0,0,resCanvas.width,resCanvas.height);
+                        resCanvas.getContext('2d').drawImage(canvas,0,0);
 
-                        let quality = 0.92;
-                        let blob = await getBlob(quality);
-
-                        if (blob.size > maxBytes) {
-                            let low = 0.01, high = 0.98;
-                            for (let i = 0; i < 10; i++) {
-                                quality = (low + high) / 2;
-                                blob = await getBlob(quality);
-                                if (blob.size > maxBytes) high = quality;
-                                else if (blob.size < minBytes) low = quality;
-                                else break;
-                            }
-                            let scale = 0.9;
-                            while (blob.size > maxBytes && (canvas.width * scale) > 100) {
-                                let newW = Math.round(canvas.width * scale);
-                                let newH = Math.round(canvas.height * scale);
-                                blob = await getBlob(quality, newW, newH);
-                                scale -= 0.08;
-                            }
-                        }
-
-                        if (blob.size < minBytes) {
-                            let scale = 1.25;
-                            while (blob.size < minBytes && scale <= 3.5) {
-                                let newW = Math.round(canvas.width * scale);
-                                let newH = Math.round(canvas.height * scale);
-                                blob = await getBlob(0.98, newW, newH);
-                                if (blob.size >= minBytes && blob.size <= maxBytes) break;
-                                scale += 0.25;
-                            }
-                            if (blob.size < minBytes) {
-                                let bytesToPad = Math.ceil(minBytes - blob.size + 1024);
-                                blob = new Blob([blob, new Uint8Array(bytesToPad)], { type: mimeType });
-                            }
-                        }
-                        resolve(blob);
+                        resolve(await compressCanvasToStrictRange(resCanvas, minBytes, maxBytes, mimeType));
                     };
                     img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function compressCanvasToStrictRange(canvas, minBytes, maxBytes, mimeType) {
+            return new Promise(async (resolve) => {
+                const getBlob = (q, cW = canvas.width, cH = canvas.height) => {
+                    const tempCanvas = document.createElement('canvas');
+                    tempCanvas.width = cW; tempCanvas.height = cH;
+                    const tCtx = tempCanvas.getContext('2d');
+                    tCtx.fillStyle = '#FFFFFF'; tCtx.fillRect(0, 0, cW, cH);
+                    tCtx.drawImage(canvas, 0, 0, cW, cH, 0, 0, cW, cH);
+                    return new Promise(res => tempCanvas.toBlob(res, mimeType, q));
+                };
+
+                let quality = 0.92;
+                let blob = await getBlob(quality);
+
+                if (blob.size > maxBytes) {
+                    let low = 0.01, high = 0.98;
+                    for (let i = 0; i < 10; i++) {
+                        quality = (low + high) / 2;
+                        blob = await getBlob(quality);
+                        if (blob.size > maxBytes) high = quality;
+                        else if (blob.size < minBytes) low = quality;
+                        else break;
+                    }
+                    let scale = 0.9;
+                    while (blob.size > maxBytes && (canvas.width * scale) > 100) {
+                        let newW = Math.round(canvas.width * scale);
+                        let newH = Math.round(canvas.height * scale);
+                        blob = await getBlob(quality, newW, newH);
+                        scale -= 0.08;
+                    }
+                }
+
+                if (blob.size < minBytes) {
+                    let scale = 1.25;
+                    while (blob.size < minBytes && scale <= 3.5) {
+                        let newW = Math.round(canvas.width * scale);
+                        let newH = Math.round(canvas.height * scale);
+                        blob = await getBlob(0.98, newW, newH);
+                        if (blob.size >= minBytes && blob.size <= maxBytes) break;
+                        scale += 0.25;
+                    }
+                    if (blob.size < minBytes) {
+                        let bytesToPad = Math.ceil(minBytes - blob.size + 1024);
+                        blob = new Blob([blob, new Uint8Array(bytesToPad)], { type: mimeType });
+                    }
+                }
+                resolve(blob);
+            });
+        }
+
+        function createPdfBlobFromCanvas(canvas) {
+            return new Promise(async (resolve) => {
+                const { jsPDF } = window.jspdf;
+                const imgData = canvas.toDataURL('image/jpeg', 0.92);
+                const pdf = new jsPDF({
+                    orientation: canvas.width > canvas.height ? 'l' : 'p',
+                    unit: 'px',
+                    format: [canvas.width, canvas.height]
+                });
+                pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
+                const pdfOutput = pdf.output('blob');
+                resolve(pdfOutput);
+            });
+        }
+
+        async function createPdfBlobFromSingle(file, rotation) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const img = new Image();
+                    img.onload = async function() {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        if (rotation === 90 || rotation === 270) {
+                            canvas.width = img.height; canvas.height = img.width;
+                        } else {
+                            canvas.width = img.width; canvas.height = img.height;
+                        }
+                        ctx.fillStyle = '#FFFFFF';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        ctx.save();
+                        ctx.translate(canvas.width/2, canvas.height/2);
+                        ctx.rotate(rotation * Math.PI / 180);
+                        ctx.drawImage(img, -img.width/2, -img.height/2);
+                        ctx.restore();
+
+                        const pdfBlob = await createPdfBlobFromCanvas(canvas);
+                        resolve(pdfBlob);
+                    };
                     img.src = e.target.result;
                 };
                 reader.onerror = reject;
@@ -678,10 +982,10 @@
             requestDownload(async () => {
                 if (processedResults.length === 0) return;
                 const zip = new JSZip();
-                const folder = zip.folder("AJ_Compressed_Photos");
+                const folder = zip.folder("AJ_Compressed_Files");
                 processedResults.forEach((item) => folder.file(item.name, item.blob));
                 const content = await zip.generateAsync({ type: "blob" });
-                saveAs(content, "AJ_Compressed_Photos.zip");
+                saveAs(content, "AJ_Compressed_Files.zip");
             });
         }
     </script>
