@@ -3,40 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="wuZ2Fqq5i5Z5C6_KamD3w9A8G1hxwof6ewoxg6U3qZ4" />
     <title>AJ Image Compressor & Pro ID Card Studio</title>
 
-    <!-- PWA & Web App Meta Tags -->
     <meta name="theme-color" content="#0b0f19">
-    <meta name="description" content="Free Bulk Image Resizer, Precision KB Target Compressor & ID Card Studio with PDF Export. Fast & Secure Browser Processing.">
+    <meta name="description" content="Free Bulk Image Resizer, Precision KB Target Compressor, ID Card Studio & PDF Tools. Fast & Secure Browser Processing.">
 
-    <!-- Open Graph / WhatsApp Preview Meta Tags -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="AJ Studio">
     <meta property="og:title" content="AJ Image Compressor & ID Studio Pro">
     <meta property="og:description" content="Free Bulk Image Resizer, Precision KB Target Compressor & ID Card Studio with PDF Export. Fast & Secure Browser Processing.">
     <meta property="og:url" content="https://ajpartner420.github.io/Aj-Image-Compressor/">
     <meta property="og:image" content="https://ajpartner420.github.io/Aj-Image-Compressor/images/logo.png">
-    <meta property="og:image:secure_url" content="https://ajpartner420.github.io/Aj-Image-Compressor/images/logo.png">
-    <meta property="og:image:type" content="image/png">
-    <meta property="og:image:width" content="1024">
-    <meta property="og:image:height" content="1024">
 
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="AJ Image Compressor & ID Studio Pro">
-    <meta name="twitter:description" content="Free Bulk Image Resizer, Precision KB Target Compressor & ID Card Studio with PDF Export.">
-    <meta name="twitter:image" content="https://ajpartner420.github.io/Aj-Image-Compressor/images/logo.png">
-
-    <!-- Google SEO Meta Tags -->
-    <title>AJ Image Compressor & Pro ID Card Studio | Free KB Resizer</title>
-    <meta name="description" content="Free online Image Compressor, Bulk Resizer & ID Card Maker (Aadhar & PAN) with KB target compression and PDF export. Safe & fast browser processing by AJ Studio.">
-    <!-- SEO High Ranking Meta Keywords -->
-    <meta name="keywords" content="aj image compressor, aj studio photo resizer, aj storybook image compressor, aj studio, image to pdf converter below 100kb, pdf merger, pdf resizer, photo resizer, image compressor to 20kb to 50kb, image compressor to 50kb to 100kb, image compressor to 100kb to 200kb, aj id studio, ilovepdf, ilovejpg, i love pdf, i love img, image compressor, reduce image size in kb, photo resizer in kb for govt forms, image compressor to 150kb to 200kb, photo size reducer online free, passport size photo resizer, aadhar card pdf maker, bulk image resizer, aadhar card front back merge online, aadhar card front back side in one page pdf, id card front back side in one page pdf, id card joiner online free, passport size photo compressor, signature photo resizer, bulk image compressor, pan card front back side in one page pdf, aj studio photo resizer, image to pdf converter below 100kb">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://ajpartner420.github.io/Aj-Image-Compressor/">
-    
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -51,13 +29,14 @@
         }
     </script>
     
-    <!-- JSZip, FileSaver, jsPDF & Cropper.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <!-- FontAwesome Icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -83,24 +62,17 @@
         .light .glass-input { background: rgba(241, 245, 249, 0.9); border: 1px solid rgba(0, 0, 0, 0.15); color: #0f172a; }
         .glass-input:focus { border-color: #f59e0b; outline: none; box-shadow: 0 0 15px rgba(245, 158, 11, 0.3); }
         .tab-btn.active { background: linear-gradient(to right, #f59e0b, #ec4899); color: white; border-color: transparent; }
+        
+        #toast-box {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            transform: translateY(100px);
+            opacity: 0;
+        }
+        #toast-box.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
     </style>
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "AJ Image Compressor & ID Studio",
-      "url": "https://ajpartner420.github.io/Aj-Image-Compressor/",
-      "applicationCategory": "UtilitiesApplication",
-      "operatingSystem": "All",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "INR"
-      }
-    }
-</script>
-    
 </head>
 <body class="flex flex-col min-h-screen justify-between p-4 sm:p-8">
 
@@ -135,27 +107,30 @@
                 AJ IMAGE COMPRESSOR & ID STUDIO
             </h1>
             <p class="text-xs sm:text-sm opacity-80 max-w-xl mx-auto font-medium">
-                Pro Grade Multi-Mode Optimizer. Single, Bulk & ID Card Studio with Crop, Swap, 360° Rotate & Strict Target Compression.
+                Pro Grade Multi-Mode Optimizer, ID Card Studio & PDF/Doc Converter Suite. Fast & Secure Browser Processing.
             </p>
         </header>
 
-        <!-- Mode Switcher Tabs (3 Tabs) -->
+        <!-- Mode Switcher Tabs (4 Tabs) -->
         <div class="flex justify-center mb-6">
-            <div class="glass-3d p-1.5 rounded-2xl flex flex-wrap gap-2 max-w-2xl w-full justify-center">
+            <div class="glass-3d p-1.5 rounded-2xl flex flex-wrap gap-2 max-w-3xl w-full justify-center">
                 <button id="tab-single" onclick="switchMode('single')" class="tab-btn active flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-image"></i> Single Mode
+                    <i class="fa-solid fa-image"></i> Single
                 </button>
                 <button id="tab-bulk" onclick="switchMode('bulk')" class="tab-btn flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 opacity-75">
-                    <i class="fa-solid fa-images"></i> Bulk Mode
+                    <i class="fa-solid fa-images"></i> Bulk
                 </button>
                 <button id="tab-idcard" onclick="switchMode('idcard')" class="tab-btn flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 opacity-75">
-                    <i class="fa-solid fa-id-card"></i> ID Card Maker
+                    <i class="fa-solid fa-id-card"></i> ID Card
+                </button>
+                <button id="tab-converter" onclick="switchMode('converter')" class="tab-btn flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 opacity-75">
+                    <i class="fa-solid fa-file-pdf"></i> PDF Tools
                 </button>
             </div>
         </div>
 
-        <!-- Settings Panel -->
-        <div class="glass-3d rounded-3xl p-6 sm:p-8 mb-6">
+        <!-- Settings Panel (Hidden in Converter Tab) -->
+        <div id="compression-settings-panel" class="glass-3d rounded-3xl p-6 sm:p-8 mb-6">
             <h2 class="text-sm font-bold uppercase tracking-widest text-amber-500 mb-5 flex items-center">
                 <i class="fa-solid fa-sliders mr-2"></i> Compression & Format Settings
             </h2>
@@ -186,6 +161,17 @@
             </div>
         </div>
 
+        <!-- Global Progress Bar Container -->
+        <div id="global-progress-container" class="hidden mb-6 glass-3d p-4 rounded-2xl">
+            <div class="flex justify-between text-xs font-bold mb-1.5">
+                <span id="global-progress-label" class="text-amber-400">Processing...</span>
+                <span id="global-progress-percent">0%</span>
+            </div>
+            <div class="w-full bg-slate-700/50 rounded-full h-2.5 overflow-hidden">
+                <div id="global-progress-bar" class="bg-gradient-to-r from-amber-500 to-pink-500 h-2.5 rounded-full transition-all duration-200" style="width: 0%"></div>
+            </div>
+        </div>
+
         <!-- ================= 1. SINGLE MODE SECTION ================= -->
         <div id="section-single" class="space-y-6">
             <div class="glass-3d rounded-3xl p-8 sm:p-10 text-center border-2 border-dashed border-amber-500/45 hover:border-amber-500 transition-all cursor-pointer group" id="single-drop-zone">
@@ -210,6 +196,9 @@
                     <div class="flex items-center gap-2">
                         <button onclick="rotateSingleImage()" class="glass-3d px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-amber-500/20 transition-all flex items-center gap-1.5 text-amber-400">
                             <i class="fa-solid fa-rotate-right"></i> Rotate 90°
+                        </button>
+                        <button onclick="resetSingleMode()" class="glass-3d px-3.5 py-2 rounded-xl text-xs font-bold hover:bg-red-500/20 transition-all flex items-center gap-1.5 text-red-400">
+                            <i class="fa-solid fa-trash"></i> Clear
                         </button>
                     </div>
                 </div>
@@ -249,6 +238,9 @@
                     <span id="bulk-total-count" class="bg-amber-500/20 text-amber-500 px-3 py-1 rounded-xl text-sm border border-amber-500/30 font-black">0</span>
                 </div>
                 <div class="flex flex-wrap gap-3">
+                    <button onclick="resetBulkMode()" class="bg-slate-700 hover:bg-slate-600 text-red-400 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate-left"></i> Reset All
+                    </button>
                     <button id="bulk-process-btn" onclick="processBulkImages()" class="bg-gradient-to-r from-amber-500 to-orange-600 hover:opacity-90 text-white font-black px-5 py-2.5 rounded-xl shadow-lg transition-all text-xs flex items-center gap-2">
                         <i class="fa-solid fa-bolt"></i> Start Bulk Process
                     </button>
@@ -268,9 +260,14 @@
                     <h3 class="text-base font-black text-amber-400 flex items-center">
                         <i class="fa-solid fa-id-card mr-2"></i> Pro ID Card Studio (Crop, Swap & Target Compress)
                     </h3>
-                    <button onclick="swapFrontAndBack()" class="bg-slate-700 hover:bg-slate-600 text-amber-400 px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border border-amber-500/30">
-                        <i class="fa-solid fa-right-left"></i> Swap Front & Back
-                    </button>
+                    <div class="flex gap-2">
+                        <button onclick="swapFrontAndBack()" class="bg-slate-700 hover:bg-slate-600 text-amber-400 px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border border-amber-500/30">
+                            <i class="fa-solid fa-right-left"></i> Swap
+                        </button>
+                        <button onclick="resetIdCardMode()" class="bg-slate-700 hover:bg-slate-600 text-red-400 px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-trash"></i> Reset
+                        </button>
+                    </div>
                 </div>
                 <p class="text-xs opacity-80 mb-6 font-medium">
                     Aadhar Card ya kisi bhi ID ke Front aur Back side ko upload karein, crop/rotate karein, aur target KB range mein JPG ya PDF generate karein!
@@ -344,18 +341,69 @@
                 </div>
             </div>
         </div>
+
+        <!-- ================= 4. CONVERTER TAB SECTION ================= -->
+        <div id="section-converter" class="space-y-6 hidden">
+            <div class="glass-3d rounded-3xl p-6 sm:p-8">
+                <h3 class="text-base font-black text-amber-400 mb-4 flex items-center">
+                    <i class="fa-solid fa-arrows-rotate mr-2"></i> All-In-One PDF & Document Tools
+                </h3>
+
+                <!-- Tool Selection Buttons with Active Indicator -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                    <button onclick="selectConvTool('jpg2pdf')" id="conv-btn-jpg2pdf" class="glass-3d p-3 rounded-2xl font-bold text-xs hover:border-amber-500 transition-all text-center border-2 border-amber-500 bg-amber-500/10 text-amber-400">
+                        <i class="fa-solid fa-file-image text-lg text-amber-400 block mb-1"></i> JPG to PDF
+                    </button>
+                    <button onclick="selectConvTool('pdfmerge')" id="conv-btn-pdfmerge" class="glass-3d p-3 rounded-2xl font-bold text-xs hover:border-amber-500 transition-all text-center opacity-75">
+                        <i class="fa-solid fa-file-circle-plus text-lg text-amber-400 block mb-1"></i> Merge PDFs
+                    </button>
+                    <button onclick="selectConvTool('pdf2word')" id="conv-btn-pdf2word" class="glass-3d p-3 rounded-2xl font-bold text-xs hover:border-amber-500 transition-all text-center opacity-75">
+                        <i class="fa-solid fa-file-word text-lg text-amber-400 block mb-1"></i> PDF to Word
+                    </button>
+                    <button onclick="selectConvTool('pdf2excel')" id="conv-btn-pdf2excel" class="glass-3d p-3 rounded-2xl font-bold text-xs hover:border-amber-500 transition-all text-center opacity-75">
+                        <i class="fa-solid fa-file-excel text-lg text-amber-400 block mb-1"></i> PDF to Excel
+                    </button>
+                </div>
+
+                <!-- Conversion Drop Zone -->
+                <div class="glass-3d rounded-2xl p-8 text-center border-2 border-dashed border-amber-500/40 hover:border-amber-500 cursor-pointer" onclick="document.getElementById('conv-file-input').click()">
+                    <input type="file" id="conv-file-input" multiple class="hidden">
+                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-amber-400 mb-2"></i>
+                    <p id="conv-upload-label" class="text-xs font-bold">Select Image Files for JPG to PDF</p>
+                </div>
+
+                <!-- Progress & Download Bar -->
+                <div class="flex flex-wrap items-center justify-between gap-4 mt-6 pt-4 border-t border-slate-500/20">
+                    <span id="conv-status" class="text-xs font-bold text-amber-400">Files select karein aur convert par click karein</span>
+                    <div class="flex gap-2">
+                        <button id="copy-text-btn" onclick="copyExtractedText()" class="hidden bg-slate-700 hover:bg-slate-600 text-amber-400 px-4 py-2.5 rounded-xl text-xs font-bold transition-all">
+                            <i class="fa-solid fa-copy"></i> Copy Text
+                        </button>
+                        <button id="conv-download-btn" onclick="executeConversion()" disabled class="bg-slate-700 opacity-50 cursor-not-allowed text-white px-5 py-2.5 rounded-xl text-xs font-black transition-all">
+                            Convert & Download
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Popup -->
+    <div id="toast-box" class="fixed bottom-6 right-6 z-50 glass-3d px-5 py-3 rounded-2xl shadow-2xl border border-amber-500/40 flex items-center gap-3 text-xs font-bold">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+        <span id="toast-msg">Notification Message</span>
     </div>
 
     <!-- Footer SEO Keywords Block -->
-<div class="max-w-5xl mx-auto mt-8 p-6 text-xs opacity-75 leading-relaxed text-center">
-    <h3 class="font-bold text-amber-400 mb-2">Popular Online Utility Tools - AJ Studio</h3>
-    <p>
-        Reduce Photo Size in KB for SSC, UPSC, Bank & Railway Forms | EPFO & ESIC Portal | Merge Id Card Front and Back Side into Single Page PDF | Passport Size & Signature Photo Resizer (50KB - 100KB Target) | Bulk Image Compressor without Quality Loss.
-    </p>
-</div>
-    
+    <div class="max-w-5xl mx-auto mt-8 p-6 text-xs opacity-75 leading-relaxed text-center glass-3d rounded-3xl">
+        <h3 class="font-bold text-amber-400 mb-2">Popular Online Utility Tools - AJ Studio</h3>
+        <p>
+            Reduce Photo Size in KB for SSC, UPSC, Bank & Railway Forms | Merge ID Card Front and Back Side into Single Page PDF | Passport Size & Signature Photo Resizer (20KB - 50KB Target) | Bulk Image Compressor without Quality Loss.
+        </p>
+    </div>
+
     <!-- Footer with Protected Links -->
-    <footer class="w-full mt-12 border-t border-slate-500/20 pt-8 pb-8 text-center text-xs glass-3d rounded-3xl">
+    <footer class="w-full mt-6 border-t border-slate-500/20 pt-8 pb-8 text-center text-xs glass-3d rounded-3xl">
         <div class="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
             <div class="text-left">
                 <p class="font-black text-base bg-gradient-to-r from-amber-400 to-pink-500 bg-clip-text text-transparent">AJ IMAGE COMPRESSOR</p>
@@ -444,6 +492,34 @@
             window.addEventListener('load', verifyIntegrity);
         })();
 
+        // Toast Notification System
+        function showToast(msg, type = 'success') {
+            const box = document.getElementById('toast-box');
+            const txt = document.getElementById('toast-msg');
+            const icon = document.getElementById('toast-icon');
+            txt.textContent = msg;
+            icon.className = type === 'success' ? 'fa-solid fa-circle-check text-emerald-400 text-base' : 'fa-solid fa-triangle-exclamation text-amber-400 text-base';
+            box.classList.add('show');
+            setTimeout(() => { box.classList.remove('show'); }, 3500);
+        }
+
+        // Global Progress Bar Helper
+        function updateGlobalProgress(percent, label) {
+            const container = document.getElementById('global-progress-container');
+            const bar = document.getElementById('global-progress-bar');
+            const lbl = document.getElementById('global-progress-label');
+            const pct = document.getElementById('global-progress-percent');
+            
+            if (percent < 0) {
+                container.classList.add('hidden');
+                return;
+            }
+            container.classList.remove('hidden');
+            bar.style.width = percent + '%';
+            pct.textContent = percent + '%';
+            if (label) lbl.textContent = label;
+        }
+
         // Theme Management with System Auto Detect & LocalStorage
         (function() {
             const savedTheme = localStorage.getItem('aj_theme');
@@ -470,46 +546,36 @@
             }
         }
 
-        // Mode Switcher (3 Tabs)
+        // Mode Switcher (4 Tabs)
         function switchMode(mode) {
-            const tabSingle = document.getElementById('tab-single');
-            const tabBulk = document.getElementById('tab-bulk');
-            const tabIdCard = document.getElementById('tab-idcard');
-            
-            const secSingle = document.getElementById('section-single');
-            const secBulk = document.getElementById('section-bulk');
-            const secIdCard = document.getElementById('section-idcard');
+            ['single', 'bulk', 'idcard', 'converter'].forEach(m => {
+                document.getElementById(`tab-${m}`).className = 'tab-btn flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 opacity-75';
+                document.getElementById(`section-${m}`).classList.add('hidden');
+            });
 
-            tabSingle.className = 'tab-btn flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 opacity-75';
-            tabBulk.className = 'tab-btn flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 opacity-75';
-            tabIdCard.className = 'tab-btn flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 opacity-75';
+            document.getElementById(`tab-${mode}`).classList.add('active');
+            document.getElementById(`tab-${mode}`).classList.remove('opacity-75');
+            document.getElementById(`section-${mode}`).classList.remove('hidden');
 
-            secSingle.classList.add('hidden');
-            secBulk.classList.add('hidden');
-            secIdCard.classList.add('hidden');
-
-            if (mode === 'single') {
-                tabSingle.classList.add('active'); tabSingle.classList.remove('opacity-75');
-                secSingle.classList.remove('hidden');
-            } else if (mode === 'bulk') {
-                tabBulk.classList.add('active'); tabBulk.classList.remove('opacity-75');
-                secBulk.classList.remove('hidden');
-            } else if (mode === 'idcard') {
-                tabIdCard.classList.add('active'); tabIdCard.classList.remove('opacity-75');
-                secIdCard.classList.remove('hidden');
+            const settingsPanel = document.getElementById('compression-settings-panel');
+            if (mode === 'converter') {
+                settingsPanel.classList.add('hidden');
+            } else {
+                settingsPanel.classList.remove('hidden');
             }
+            updateGlobalProgress(-1);
         }
 
         // Share & Modal Functions
         function openShareModal() { document.getElementById('share-modal').classList.remove('hidden'); }
         function closeShareModal() { document.getElementById('share-modal').classList.add('hidden'); }
         function shareOnWhatsApp() {
-            const text = "🚀 Check out this amazing free ID Card Studio & Image Compressor created by AJ StoryBook! " + window.location.href;
+            const text = "🚀 Check out this amazing free PDF & ID Studio created by AJ StoryBook! " + window.location.href;
             window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(text), "_blank");
         }
         function copyShareLink() {
             navigator.clipboard.writeText(window.location.href).then(() => {
-                alert("🔗 Link copied to clipboard!");
+                showToast("🔗 Link copied to clipboard!");
                 closeShareModal();
             });
         }
@@ -519,7 +585,10 @@
         let singleCompressedBlob = null;
         let singleRotationAngle = 0;
 
-        document.getElementById('single-file-input').addEventListener('change', (e) => handleSingleFile(e.target.files[0]));
+        document.getElementById('single-file-input').addEventListener('change', (e) => {
+            singleCompressedBlob = null;
+            handleSingleFile(e.target.files[0]);
+        });
 
         function handleSingleFile(file) {
             if (!file || !file.type.startsWith('image/')) return;
@@ -535,7 +604,16 @@
             document.getElementById('single-editor').classList.remove('hidden');
             document.getElementById('single-status-text').textContent = "Ready to compress";
             document.getElementById('single-download-btn').disabled = true;
-            document.getElementById('single-download-btn').classList.add('opacity-50', 'cursor-not-allowed');
+            document.getElementById('single-download-btn').className = 'bg-slate-700 opacity-50 cursor-not-allowed text-white font-black px-5 py-2.5 rounded-xl text-xs shadow-lg transition-all flex items-center gap-2';
+            showToast("📸 Image uploaded successfully!");
+        }
+
+        function resetSingleMode() {
+            singleFile = null;
+            singleCompressedBlob = null;
+            document.getElementById('single-file-input').value = "";
+            document.getElementById('single-editor').classList.add('hidden');
+            showToast("🗑️ Single Mode reset successfully!", "warn");
         }
 
         function rotateSingleImage() {
@@ -573,24 +651,31 @@
             const minBytes = minKB * 1024;
             const maxBytes = maxKB * 1024;
 
+            updateGlobalProgress(30, "Compressing Image...");
             document.getElementById('single-status-text').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
             
             try {
+                updateGlobalProgress(70, "Optimizing KB target...");
                 if (format === 'application/pdf') {
                     singleCompressedBlob = await createPdfBlobFromSingle(singleFile, singleRotationAngle, minBytes, maxBytes);
                 } else {
                     singleCompressedBlob = await resizeToStrictRange(singleFile, minBytes, maxBytes, format, singleRotationAngle);
                 }
+                updateGlobalProgress(100, "Done!");
+                setTimeout(() => updateGlobalProgress(-1), 800);
+
                 const finalKB = (singleCompressedBlob.size / 1024).toFixed(1);
                 document.getElementById('single-status-text').innerHTML = `<span class="text-emerald-400 font-black">Success! Final Size: ${finalKB} KB</span>`;
+                showToast(`✨ Image compressed to ${finalKB} KB successfully!`);
                 
                 const dlBtn = document.getElementById('single-download-btn');
                 dlBtn.disabled = false;
-                dlBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                dlBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700', 'cursor-pointer');
+                dlBtn.className = 'bg-emerald-600 hover:bg-emerald-700 cursor-pointer text-white font-black px-5 py-2.5 rounded-xl text-xs shadow-lg transition-all flex items-center gap-2';
             } catch (err) {
                 console.error(err);
+                updateGlobalProgress(-1);
                 document.getElementById('single-status-text').textContent = "Compression Error!";
+                showToast("❌ Compression failed!", "warn");
             }
         }
 
@@ -602,6 +687,7 @@
                 if (ext === 'jpeg') ext = 'jpg';
                 const baseName = singleFile.name.substring(0, singleFile.name.lastIndexOf('.')) || singleFile.name;
                 saveAs(singleCompressedBlob, `${baseName}_aj.${ext}`);
+                showToast("📥 File downloaded successfully!");
             });
         }
 
@@ -610,7 +696,10 @@
         let selectedFiles = [];
         let processedResults = [];
 
-        document.getElementById('bulk-file-input').addEventListener('change', (e) => handleBulkFiles(e.target.files));
+        document.getElementById('bulk-file-input').addEventListener('change', (e) => {
+            processedResults = [];
+            handleBulkFiles(e.target.files);
+        });
 
         function handleBulkFiles(files) {
             selectedFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
@@ -619,7 +708,6 @@
                 document.getElementById('bulk-total-count').textContent = selectedFiles.length;
                 const container = document.getElementById('bulk-results-container');
                 container.innerHTML = '';
-                processedResults = [];
                 document.getElementById('bulk-download-all-btn').classList.add('hidden');
 
                 selectedFiles.forEach((file, index) => {
@@ -642,7 +730,17 @@
                     };
                     reader.readAsDataURL(file);
                 });
+                showToast(`📁 ${selectedFiles.length} images loaded for bulk processing.`);
             }
+        }
+
+        function resetBulkMode() {
+            selectedFiles = [];
+            processedResults = [];
+            document.getElementById('bulk-file-input').value = "";
+            document.getElementById('bulk-action-bar').classList.add('hidden');
+            document.getElementById('bulk-results-container').innerHTML = '';
+            showToast("🗑️ Bulk mode reset successfully!", "warn");
         }
 
         async function processBulkImages() {
@@ -661,6 +759,9 @@
                 const file = selectedFiles[i];
                 const statusSpan = document.getElementById(`bulk-status-${i}`);
                 statusSpan.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+                let prog = Math.round(((i + 1) / selectedFiles.length) * 100);
+                updateGlobalProgress(prog, `Processing item ${i + 1} of ${selectedFiles.length}`);
 
                 try {
                     let blob;
@@ -684,7 +785,7 @@
                     const row = document.getElementById(`bulk-row-${i}`);
                     if (!row.querySelector('.download-single')) {
                         const btn = document.createElement('button');
-                        btn.className = 'bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-xl text-xs font-black transition-all ml-2';
+                        btn.className = 'bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-xl text-xs font-black transition-all ml-2 download-single';
                         btn.innerHTML = '<i class="fa-solid fa-download"></i>';
                         btn.onclick = () => requestDownload(() => saveAs(blob, finalFileName));
                         row.querySelector('div:last-child').appendChild(btn);
@@ -694,10 +795,12 @@
                 }
             }
 
+            updateGlobalProgress(-1);
             processBtn.disabled = false;
             processBtn.innerHTML = '<i class="fa-solid fa-bolt"></i> Start Bulk Process';
             if (processedResults.length > 0) {
                 document.getElementById('bulk-download-all-btn').classList.remove('hidden');
+                showToast("🚀 All bulk files processed successfully!");
             }
         }
 
@@ -710,10 +813,12 @@
         let backFileObj = null;
 
         document.getElementById('id-front-input').addEventListener('change', (e) => {
+            finalIdBlob = null;
             frontFileObj = e.target.files[0];
             initCropper(frontFileObj, 'front');
         });
         document.getElementById('id-back-input').addEventListener('change', (e) => {
+            finalIdBlob = null;
             backFileObj = e.target.files[0];
             initCropper(backFileObj, 'back');
         });
@@ -744,14 +849,39 @@
             reader.readAsDataURL(file);
         }
 
+        function resetIdCardMode() {
+            if (frontCropper) { frontCropper.destroy(); frontCropper = null; }
+            if (backCropper) { backCropper.destroy(); backCropper = null; }
+            frontFileObj = null; backFileObj = null; finalIdBlob = null;
+            document.getElementById('id-front-input').value = "";
+            document.getElementById('id-back-input').value = "";
+            document.getElementById('id-front-editor').classList.add('hidden');
+            document.getElementById('id-back-editor').classList.add('hidden');
+            document.getElementById('id-front-placeholder').classList.remove('hidden');
+            document.getElementById('id-front-upload-area').classList.remove('hidden');
+            document.getElementById('id-back-placeholder').classList.remove('hidden');
+            document.getElementById('id-back-upload-area').classList.remove('hidden');
+            document.getElementById('id-process-btn').disabled = true;
+            document.getElementById('id-process-btn').className = 'bg-slate-700 opacity-50 cursor-not-allowed text-white font-black px-6 py-3 rounded-xl text-xs shadow-lg transition-all flex items-center gap-2';
+            document.getElementById('id-download-btn').disabled = true;
+            document.getElementById('id-download-btn').className = 'bg-emerald-600 opacity-50 cursor-not-allowed text-white font-black px-6 py-3 rounded-xl text-xs shadow-lg transition-all flex items-center gap-2';
+            document.getElementById('id-status').textContent = "Front aur Back dono photos upload karein";
+            showToast("🗑️ ID Card Studio reset successfully!", "warn");
+        }
+
         function swapFrontAndBack() {
-            if (!frontFileObj || !backFileObj) return;
+            if (!frontFileObj || !backFileObj) {
+                showToast("⚠️ Please upload both front and back sides first!", "warn");
+                return;
+            }
+            finalIdBlob = null;
             const tempFile = frontFileObj;
             frontFileObj = backFileObj;
             backFileObj = tempFile;
 
             initCropper(frontFileObj, 'front');
             initCropper(backFileObj, 'back');
+            showToast("🔄 Front and Back sides swapped!");
         }
 
         function rotateIdCropper(type, deg) {
@@ -770,8 +900,7 @@
             if (document.getElementById('id-front-editor').classList.contains('hidden') === false &&
                 document.getElementById('id-back-editor').classList.contains('hidden') === false) {
                 btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-                btn.classList.add('bg-gradient-to-r', 'from-amber-500', 'to-orange-600', 'cursor-pointer');
+                btn.className = 'bg-gradient-to-r from-amber-500 to-orange-600 cursor-pointer text-white font-black px-6 py-3 rounded-xl text-xs shadow-lg transition-all flex items-center gap-2';
                 status.textContent = "Dono sides cropped hain. Ab 'Merge & Compress' par click karein.";
             }
         }
@@ -787,6 +916,7 @@
             const btn = document.getElementById('id-process-btn');
             btn.disabled = true;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Merging & Compressing...';
+            updateGlobalProgress(50, "Merging ID Card sides...");
 
             try {
                 const canvas1 = frontCropper.getCroppedCanvas({ imageSmoothingQuality: 'high' });
@@ -813,16 +943,21 @@
                     finalIdBlob = await compressCanvasToStrictRange(mergedCanvas, minBytes, maxBytes, format);
                 }
 
+                updateGlobalProgress(100, "Done!");
+                setTimeout(() => updateGlobalProgress(-1), 800);
+
                 const finalKB = (finalIdBlob.size / 1024).toFixed(1);
                 document.getElementById('id-status').innerHTML = `<span class="text-emerald-400 font-black">ID Card Successfully Created! Size: ${finalKB} KB</span>`;
+                showToast(`🆔 ID Card successfully created & compressed to ${finalKB} KB!`);
 
                 const dlBtn = document.getElementById('id-download-btn');
                 dlBtn.disabled = false;
-                dlBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                dlBtn.classList.add('cursor-pointer');
+                dlBtn.className = 'bg-emerald-600 hover:bg-emerald-700 cursor-pointer text-white font-black px-6 py-3 rounded-xl text-xs shadow-lg transition-all flex items-center gap-2';
             } catch (err) {
                 console.error(err);
+                updateGlobalProgress(-1);
                 document.getElementById('id-status').textContent = "ID Card processing error!";
+                showToast("❌ ID Card merge error!", "warn");
             }
 
             btn.disabled = false;
@@ -835,7 +970,185 @@
                 const format = document.getElementById('format-select').value;
                 let ext = format === 'application/pdf' ? 'pdf' : format.split('/')[1];
                 if (ext === 'jpeg') ext = 'jpg';
-                saveAs(finalIdBlob, `AJ_ID_Card_Front_Back.${ext}`);
+                const firstFileName = frontFileObj ? frontFileObj.name.substring(0, frontFileObj.name.lastIndexOf('.')) : 'ID_Card';
+                saveAs(finalIdBlob, `${firstFileName}_aj.${ext}`);
+                showToast("📥 ID Card downloaded successfully!");
+            });
+        }
+
+
+        // ================= 4. CONVERTER TAB LOGIC (RETAIN ORIGINAL NAME + _aj) =================
+        let currentConvTool = 'jpg2pdf';
+        let convFiles = [];
+        let convertedOutputBlob = null;
+        let convertedOutputName = '';
+        let extractedRawText = '';
+
+        function selectConvTool(tool) {
+            currentConvTool = tool;
+            convFiles = [];
+            convertedOutputBlob = null;
+            extractedRawText = '';
+            document.getElementById('copy-text-btn').classList.add('hidden');
+
+            ['jpg2pdf', 'pdfmerge', 'pdf2word', 'pdf2excel'].forEach(t => {
+                const btn = document.getElementById(`conv-btn-${t}`);
+                if (t === tool) {
+                    btn.className = 'glass-3d p-3 rounded-2xl font-bold text-xs transition-all text-center border-2 border-amber-500 bg-amber-500/10 text-amber-400 shadow-md';
+                } else {
+                    btn.className = 'glass-3d p-3 rounded-2xl font-bold text-xs hover:border-amber-500 transition-all text-center opacity-75';
+                }
+            });
+
+            const labels = {
+                'jpg2pdf': 'Select Image Files for JPG to PDF',
+                'pdfmerge': 'Select Multiple PDF Files to Merge',
+                'pdf2word': 'Select a PDF File to extract Text/Word',
+                'pdf2excel': 'Select a PDF File to extract Tables to Excel'
+            };
+            document.getElementById('conv-upload-label').textContent = labels[tool];
+            document.getElementById('conv-file-input').value = "";
+            const btn = document.getElementById('conv-download-btn');
+            btn.disabled = true;
+            btn.className = 'bg-slate-700 opacity-50 cursor-not-allowed text-white px-5 py-2.5 rounded-xl text-xs font-black transition-all';
+            btn.innerHTML = 'Convert & Download';
+            document.getElementById('conv-status').textContent = "Files select karein";
+        }
+
+        document.getElementById('conv-file-input').addEventListener('change', (e) => {
+            convFiles = Array.from(e.target.files);
+            convertedOutputBlob = null;
+            extractedRawText = '';
+            document.getElementById('copy-text-btn').classList.add('hidden');
+            if (convFiles.length > 0) {
+                document.getElementById('conv-status').textContent = `${convFiles.length} file(s) selected. Ready to convert!`;
+                const btn = document.getElementById('conv-download-btn');
+                btn.disabled = false;
+                btn.className = 'bg-gradient-to-r from-amber-500 to-orange-600 hover:opacity-90 cursor-pointer text-white px-5 py-2.5 rounded-xl text-xs font-black transition-all';
+                btn.innerHTML = 'Convert & Download';
+                showToast(`📄 ${convFiles.length} file(s) ready for conversion.`);
+            }
+        });
+
+        function copyExtractedText() {
+            if (!extractedRawText) return;
+            navigator.clipboard.writeText(extractedRawText).then(() => {
+                showToast("📋 Extracted text copied to clipboard!");
+            });
+        }
+
+        async function executeConversion() {
+            if (convFiles.length === 0) return;
+            const btn = document.getElementById('conv-download-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Converting...';
+            document.getElementById('conv-status').textContent = "Processing files in browser...";
+            updateGlobalProgress(40, "Converting document...");
+
+            const firstFile = convFiles[0];
+            const baseName = firstFile.name.substring(0, firstFile.name.lastIndexOf('.')) || firstFile.name;
+
+            try {
+                if (currentConvTool === 'jpg2pdf') {
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF();
+                    for (let i = 0; i < convFiles.length; i++) {
+                        if (!convFiles[i].type.startsWith('image/')) continue;
+                        const dataUrl = await readFileAsDataURL(convFiles[i]);
+                        if (i > 0) pdf.addPage();
+                        const img = await loadImage(dataUrl);
+                        const pw = pdf.internal.pageSize.getWidth();
+                        const ph = pdf.internal.pageSize.getHeight();
+                        const ratio = Math.min(pw / img.width, ph / img.height);
+                        pdf.addImage(dataUrl, 'JPEG', (pw - img.width * ratio)/2, (ph - img.height * ratio)/2, img.width * ratio, img.height * ratio);
+                    }
+                    convertedOutputBlob = pdf.output('blob');
+                    convertedOutputName = `${baseName}_aj.pdf`;
+                } else if (currentConvTool === 'pdfmerge') {
+                    const { PDFDocument } = PDFLib;
+                    const mergedPdf = await PDFDocument.create();
+                    for (let file of convFiles) {
+                        const arrayBuffer = await file.arrayBuffer();
+                        const pdf = await PDFDocument.load(arrayBuffer);
+                        const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                        copiedPages.forEach((page) => mergedPdf.addPage(page));
+                    }
+                    const mergedPdfBytes = await mergedPdf.save();
+                    convertedOutputBlob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+                    convertedOutputName = `${baseName}_merged_aj.pdf`;
+                } else if (currentConvTool === 'pdf2word') {
+                    const file = convFiles[0];
+                    const arrayBuffer = await file.arrayBuffer();
+                    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                    let fullText = '';
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const textContent = await page.getTextContent();
+                        fullText += textContent.items.map(item => item.str).join(' ') + '\n\n';
+                    }
+                    extractedRawText = fullText;
+                    document.getElementById('copy-text-btn').classList.remove('hidden');
+                    convertedOutputBlob = new Blob([fullText], { type: 'application/msword;charset=utf-8' });
+                    convertedOutputName = `${baseName}_aj.doc`;
+                } else if (currentConvTool === 'pdf2excel') {
+                    const file = convFiles[0];
+                    const arrayBuffer = await file.arrayBuffer();
+                    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                    let rows = [];
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const textContent = await page.getTextContent();
+                        textContent.items.forEach(item => {
+                            rows.push([item.str]);
+                        });
+                    }
+                    const ws = XLSX.utils.aoa_to_sheet(rows);
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "ExtractedData");
+                    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+                    convertedOutputBlob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+                    convertedOutputName = `${baseName}_aj.xlsx`;
+                }
+
+                updateGlobalProgress(100, "Done!");
+                setTimeout(() => updateGlobalProgress(-1), 800);
+
+                document.getElementById('conv-status').innerHTML = '<span class="text-emerald-400 font-black">Conversion Complete! Click download below.</span>';
+                btn.disabled = false;
+                btn.className = 'bg-emerald-600 hover:bg-emerald-700 cursor-pointer text-white px-5 py-2.5 rounded-xl text-xs font-black transition-all';
+                btn.innerHTML = '<i class="fa-solid fa-download"></i> Download Converted File';
+                btn.onclick = () => requestDownload(() => {
+                    saveAs(convertedOutputBlob, convertedOutputName);
+                    showToast("📥 Converted file downloaded successfully!");
+                });
+                showToast("✨ Document converted successfully!");
+            } catch (err) {
+                console.error(err);
+                updateGlobalProgress(-1);
+                document.getElementById('conv-status').textContent = "Conversion Error!";
+                btn.disabled = false;
+                btn.innerHTML = 'Convert & Download';
+                showToast("❌ Conversion failed!", "warn");
+            }
+        }
+
+        function readFileAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function loadImage(src) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => resolve(img);
+                img.onerror = reject;
+                img.src = src;
             });
         }
 
@@ -999,10 +1312,10 @@
             const descEl = document.getElementById('modal-desc');
             descEl.innerHTML = '🎉 <strong class="text-amber-400">Thank you for supporting AJ StoryBook!</strong> Download unlocked.';
             dlBtn.disabled = false;
-            dlBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            dlBtn.classList.add('bg-gradient-to-r', 'from-emerald-500', 'to-teal-600', 'cursor-pointer');
+            dlBtn.className = 'w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:opacity-90 cursor-pointer text-white font-bold py-3 px-6 rounded-2xl shadow-lg transition-all text-sm';
             dlBtn.textContent = '🔓 Ab Download Karein (Click Here)';
             sessionStorage.setItem('aj_subscribed', 'true');
+            showToast("🎉 YouTube subscription verified! Download unlocked.");
         }
 
         function executeDownload() {
@@ -1021,6 +1334,7 @@
                 processedResults.forEach((item) => folder.file(item.name, item.blob));
                 const content = await zip.generateAsync({ type: "blob" });
                 saveAs(content, "AJ_Compressed_Files.zip");
+                showToast("📥 ZIP archive downloaded successfully!");
             });
         }
     </script>
