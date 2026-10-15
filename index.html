@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    <title>AJ Image Compressor & Pro ID Card Studio</title>
+
+    <!-- PWA & Web App Meta Tags -->
+    <meta name="theme-color" content="#0b0f19">
+    <meta name="description" content="Free Bulk Image Resizer, Precision KB Target Compressor & ID Card Studio with PDF Export. Fast & Secure Browser Processing.">
+
     <!-- Open Graph / WhatsApp Preview Meta Tags -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="AJ Studio">
@@ -13,17 +18,15 @@
     <meta property="og:image" content="https://ajpartner420.github.io/Aj-Image-Compressor/images/logo.png">
     <meta property="og:image:secure_url" content="https://ajpartner420.github.io/Aj-Image-Compressor/images/logo.png">
     <meta property="og:image:type" content="image/png">
-    <meta property="og:image:width" content="300">
-    <meta property="og:image:height" content="300">
+    <meta property="og:image:width" content="1024">
+    <meta property="og:image:height" content="1024">
 
-<!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://ajpartner420.github.io/Aj-Image-Compressor/">
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="AJ Image Compressor & ID Studio Pro">
-    <meta name="twitter:description" content="Free Bulk Image Resizer, Precision KB Target Compressor & ID Card Studio with PDF Export. Fast, Secure & Local Browser Processing.">
+    <meta name="twitter:description" content="Free Bulk Image Resizer, Precision KB Target Compressor & ID Card Studio with PDF Export.">
     <meta name="twitter:image" content="https://ajpartner420.github.io/Aj-Image-Compressor/images/logo.png">
-   
-    <title>AJ Image Compressor & Pro ID Card Studio</title>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -38,6 +41,7 @@
             }
         }
     </script>
+    
     <!-- JSZip, FileSaver, jsPDF & Cropper.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -46,6 +50,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         body { transition: background 0.4s ease, color 0.4s ease; }
         .dark body { background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 50%, #020617 100%); color: #f8fafc; }
@@ -74,7 +79,7 @@
 <body class="flex flex-col min-h-screen justify-between p-4 sm:p-8">
 
     <div class="max-w-5xl mx-auto w-full">
-        <!-- Top Nav with Fixed Logo -->
+        <!-- Top Nav with Logo -->
         <div class="flex justify-between items-center mb-6">
             <div class="flex items-center gap-3">
                 <a href="#" class="flex items-center gap-3 group">
@@ -104,7 +109,7 @@
                 AJ IMAGE COMPRESSOR & ID STUDIO
             </h1>
             <p class="text-xs sm:text-sm opacity-80 max-w-xl mx-auto font-medium">
-                Pro Grade Multi-Mode Optimizer. Single, Bulk & ID Card Studio with Crop, 90° Rotate & Strict Target Compression.
+                Pro Grade Multi-Mode Optimizer. Single, Bulk & ID Card Studio with Crop, Swap, 360° Rotate & Strict Target Compression.
             </p>
         </header>
 
@@ -230,14 +235,19 @@
             <div id="bulk-results-container" class="space-y-3"></div>
         </div>
 
-        <!-- ================= 3. ID CARD MAKER SECTION (FRONT & BACK WITH CROPPER) ================= -->
+        <!-- ================= 3. ID CARD MAKER SECTION ================= -->
         <div id="section-idcard" class="space-y-6 hidden">
             <div class="glass-3d rounded-3xl p-6 sm:p-8">
-                <h3 class="text-base font-black mb-4 text-amber-400 flex items-center">
-                    <i class="fa-solid fa-id-card mr-2"></i> Pro ID Card Studio (Crop, 90° Rotate & Target Compress)
-                </h3>
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                    <h3 class="text-base font-black text-amber-400 flex items-center">
+                        <i class="fa-solid fa-id-card mr-2"></i> Pro ID Card Studio (Crop, Swap & Target Compress)
+                    </h3>
+                    <button onclick="swapFrontAndBack()" class="bg-slate-700 hover:bg-slate-600 text-amber-400 px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border border-amber-500/30">
+                        <i class="fa-solid fa-right-left"></i> Swap Front & Back
+                    </button>
+                </div>
                 <p class="text-xs opacity-80 mb-6 font-medium">
-                    Aadhar Card ya kisi bhi ID ke Front aur Back side ko alag-alag upload karein. Extra edges ko crop karein, 90 degree rotate karein, aur target KB range ke mutabiq JPG ya PDF mein download karein!
+                    Aadhar Card ya kisi bhi ID ke Front aur Back side ko upload karein, crop/rotate karein, aur target KB range mein JPG ya PDF generate karein!
                 </p>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
@@ -400,10 +410,10 @@
             window.addEventListener('load', verifyIntegrity);
         })();
 
-        // Theme Management with LocalStorage
+        // Theme Management with System Auto Detect & LocalStorage
         (function() {
-            const savedTheme = localStorage.getItem('aj_theme') || 'dark';
-            if (savedTheme === 'light') {
+            const savedTheme = localStorage.getItem('aj_theme');
+            if (savedTheme === 'light' || (!savedTheme && window.matchMedia('(prefers-color-scheme: light)').matches)) {
                 document.documentElement.classList.remove('dark');
                 document.documentElement.classList.add('light');
                 document.getElementById('theme-icon').className = 'fa-solid fa-moon text-indigo-600';
@@ -658,13 +668,21 @@
         }
 
 
-        // ================= 3. ID CARD MAKER LOGIC (CROPPER.JS) =================
+        // ================= 3. ID CARD MAKER LOGIC =================
         let frontCropper = null;
         let backCropper = null;
         let finalIdBlob = null;
+        let frontFileObj = null;
+        let backFileObj = null;
 
-        document.getElementById('id-front-input').addEventListener('change', (e) => initCropper(e.target.files[0], 'front'));
-        document.getElementById('id-back-input').addEventListener('change', (e) => initCropper(e.target.files[0], 'back'));
+        document.getElementById('id-front-input').addEventListener('change', (e) => {
+            frontFileObj = e.target.files[0];
+            initCropper(frontFileObj, 'front');
+        });
+        document.getElementById('id-back-input').addEventListener('change', (e) => {
+            backFileObj = e.target.files[0];
+            initCropper(backFileObj, 'back');
+        });
 
         function initCropper(file, type) {
             if (!file || !file.type.startsWith('image/')) return;
@@ -690,6 +708,16 @@
                 checkIdCardReady();
             };
             reader.readAsDataURL(file);
+        }
+
+        function swapFrontAndBack() {
+            if (!frontFileObj || !backFileObj) return;
+            const tempFile = frontFileObj;
+            frontFileObj = backFileObj;
+            backFileObj = tempFile;
+
+            initCropper(frontFileObj, 'front');
+            initCropper(backFileObj, 'back');
         }
 
         function rotateIdCropper(type, deg) {
@@ -727,11 +755,9 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Merging & Compressing...';
 
             try {
-                // Get cropped canvases from cropper instances
                 const canvas1 = frontCropper.getCroppedCanvas({ imageSmoothingQuality: 'high' });
                 const canvas2 = backCropper.getCroppedCanvas({ imageSmoothingQuality: 'high' });
 
-                // Merge vertically with a 3% clean gap
                 const targetWidth = Math.max(canvas1.width, canvas2.width);
                 const h1 = Math.round((canvas1.height * targetWidth) / canvas1.width);
                 const h2 = Math.round((canvas2.height * targetWidth) / canvas2.width);
@@ -747,7 +773,6 @@
                 fCtx.drawImage(canvas1, 0, 0, targetWidth, h1);
                 fCtx.drawImage(canvas2, 0, h1 + gap, targetWidth, h2);
 
-                // Compress or convert to PDF with strict target size
                 if (format === 'application/pdf') {
                     finalIdBlob = await createPdfBlobFromCanvas(mergedCanvas, minBytes, maxBytes);
                 } else {
@@ -781,7 +806,7 @@
         }
 
 
-        // ================= HELPER COMPRESSION & PDF ENGINES =================
+        // ================= HELPER COMPRESSION & EXIF CLEANING ENGINES =================
         function resizeToStrictRange(file, minBytes, maxBytes, mimeType, rotation) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -875,7 +900,6 @@
 
         function createPdfBlobFromCanvas(canvas, minBytes, maxBytes) {
             return new Promise(async (resolve) => {
-                // First compress canvas to JPEG matching the target KB range
                 const compressedJpegBlob = await compressCanvasToStrictRange(canvas, minBytes, maxBytes, 'image/jpeg');
                 
                 const reader = new FileReader();
