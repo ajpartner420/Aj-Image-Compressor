@@ -147,6 +147,9 @@
                 <button id="tab-idcard" onclick="switchMode('idcard')" class="tab-btn flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 opacity-75">
                     <i class="fa-solid fa-id-card"></i> ID Card
                 </button>
+                <button id="tab-zipextract" onclick="switchMode('zipextract')" class="tab-btn flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 opacity-75">
+                    <i class="fa-solid fa-file-zipper"></i> ZIP Extract
+                </button>
                 <button id="tab-converter" onclick="switchMode('converter')" class="tab-btn flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 opacity-75">
                     <i class="fa-solid fa-file-pdf"></i> PDF Tools
                 </button>
@@ -366,7 +369,40 @@
             </div>
         </div>
 
-        <!-- ================= 4. CONVERTER TAB SECTION ================= -->
+        <!-- ================= 4. ZIP EXTRACTOR SECTION ================= -->
+        <div id="section-zipextract" class="space-y-6 hidden">
+            <div class="glass-3d rounded-3xl p-6 sm:p-8">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <h3 class="text-base font-black text-amber-400 flex items-center">
+                <i class="fa-solid fa-file-zipper mr-2"></i> ZIP Archive Extractor & Unzipper
+            </h3>
+            <button onclick="resetZipMode()" class="bg-slate-700 hover:bg-slate-600 text-red-400 px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-trash"></i> Clear
+            </button>
+        </div>
+        <p class="text-xs opacity-80 mb-6 font-medium">
+            Kisi bhi ZIP archive file ko upload karein aur uske andar ke saare images/files instant extract karein.
+        </p>
+
+        <div class="glass-3d rounded-2xl p-8 text-center border-2 border-dashed border-amber-500/40 hover:border-amber-500 cursor-pointer" onclick="document.getElementById('zip-file-input').click()">
+            <input type="file" id="zip-file-input" accept=".zip,application/zip,application/x-zip-compressed" class="hidden">
+            <i class="fa-solid fa-box-open text-4xl text-amber-400 mb-2"></i>
+            <p class="text-xs font-bold">Ek ZIP File Upload / Drop Karein</p>
+        </div>
+
+        <div id="zip-preview-area" class="hidden mt-6 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-500/20 pb-3">
+                <span class="text-xs font-bold text-amber-400">Extracted Files: <strong id="zip-file-count" class="text-white">0</strong></span>
+                <button onclick="downloadAllExtractedZipFiles()" class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black px-4 py-2 rounded-xl text-xs shadow-lg flex items-center gap-2">
+                    <i class="fa-solid fa-download"></i> Save All Extracted Files
+                </button>
+            </div>
+            <div id="zip-files-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-96 overflow-y-auto pr-1"></div>
+        </div>
+    </div>
+</div>
+        
+        <!-- ================= 5. CONVERTER TAB SECTION ================= -->
         <div id="section-converter" class="space-y-6 hidden">
             <div class="glass-3d rounded-3xl p-6 sm:p-8">
                 <h3 class="text-base font-black text-amber-400 mb-4 flex items-center">
@@ -570,25 +606,25 @@
             }
         }
 
-        // Mode Switcher (4 Tabs)
+        // Mode Switcher (5 Tabs)
         function switchMode(mode) {
-            ['single', 'bulk', 'idcard', 'converter'].forEach(m => {
-                document.getElementById(`tab-${m}`).className = 'tab-btn flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 opacity-75';
-                document.getElementById(`section-${m}`).classList.add('hidden');
-            });
+    ['single', 'bulk', 'idcard', 'zipextract', 'converter'].forEach(m => {
+        document.getElementById(`tab-${m}`).className = 'tab-btn flex-1 py-2 px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 opacity-75';
+        document.getElementById(`section-${m}`).classList.add('hidden');
+    });
 
-            document.getElementById(`tab-${mode}`).classList.add('active');
-            document.getElementById(`tab-${mode}`).classList.remove('opacity-75');
-            document.getElementById(`section-${mode}`).classList.remove('hidden');
+    document.getElementById(`tab-${mode}`).classList.add('active');
+    document.getElementById(`tab-${mode}`).classList.remove('opacity-75');
+    document.getElementById(`section-${mode}`).classList.remove('hidden');
 
-            const settingsPanel = document.getElementById('compression-settings-panel');
-            if (mode === 'converter') {
-                settingsPanel.classList.add('hidden');
-            } else {
-                settingsPanel.classList.remove('hidden');
-            }
-            updateGlobalProgress(-1);
-        }
+    const settingsPanel = document.getElementById('compression-settings-panel');
+    if (mode === 'converter' || mode === 'zipextract') {
+        settingsPanel.classList.add('hidden');
+    } else {
+        settingsPanel.classList.remove('hidden');
+    }
+    updateGlobalProgress(-1);
+}
 
         // Share & Modal Functions
         function openShareModal() { document.getElementById('share-modal').classList.remove('hidden'); }
@@ -1361,6 +1397,94 @@
                 showToast("📥 ZIP archive downloaded successfully!");
             });
         }
+
+        // ================= ZIP EXTRACTOR LOGIC =================
+let extractedZipFiles = [];
+
+document.getElementById('zip-file-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    updateGlobalProgress(30, "Reading ZIP file...");
+    extractedZipFiles = [];
+    const listContainer = document.getElementById('zip-files-list');
+    listContainer.innerHTML = '';
+
+    try {
+        const zip = new JSZip();
+        const zipData = await zip.loadAsync(file);
+        const fileEntries = Object.keys(zipData.files).filter(filename => !zipData.files[filename].dir);
+
+        updateGlobalProgress(60, "Extracting contents...");
+        let loadedCount = 0;
+
+        for (let filename of fileEntries) {
+            const zipEntry = zipData.files[filename];
+            const blob = await zipEntry.async("blob");
+            const fileUrl = URL.createObjectURL(blob);
+            
+            extractedZipFiles.push({ name: filename, blob: blob, url: fileUrl });
+
+            const div = document.createElement('div');
+            div.className = 'glass-3d rounded-2xl p-3 flex items-center justify-between gap-3 text-xs';
+            
+            const isImg = /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(filename);
+            const iconHtml = isImg ? `<img src="${fileUrl}" class="w-10 h-10 object-cover rounded-xl border border-amber-500/30">` : `<i class="fa-solid fa-file-lines text-2xl text-amber-400"></i>`;
+
+            div.innerHTML = `
+                <div class="flex items-center gap-3 truncate">
+                    ${iconHtml}
+                    <div>
+                        <p class="font-bold truncate max-w-[150px] sm:max-w-[200px]">${filename}</p>
+                        <p class="opacity-60 text-[10px]">${(blob.size / 1024).toFixed(1)} KB</p>
+                    </div>
+                </div>
+                <button onclick="downloadSingleExtractedFile(${loadedCount})" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 shadow-md">
+                    <i class="fa-solid fa-download"></i> Save
+                </button>
+            `;
+            listContainer.appendChild(div);
+            loadedCount++;
+        }
+
+        document.getElementById('zip-file-count').textContent = extractedZipFiles.length;
+        document.getElementById('zip-preview-area').classList.remove('hidden');
+        updateGlobalProgress(100, "Done!");
+        setTimeout(() => updateGlobalProgress(-1), 800);
+        showToast(`📦 ZIP extracted successfully! Found ${extractedZipFiles.length} file(s).`);
+    } catch (err) {
+        console.error(err);
+        updateGlobalProgress(-1);
+        showToast("❌ Unable to extract ZIP file!", "warn");
+    }
+});
+
+function resetZipMode() {
+    extractedZipFiles = [];
+    document.getElementById('zip-file-input').value = "";
+    document.getElementById('zip-preview-area').classList.add('hidden');
+    document.getElementById('zip-files-list').innerHTML = "";
+    showToast("🗑️ ZIP Extractor reset successfully!", "warn");
+}
+
+function downloadSingleExtractedFile(index) {
+    if (!extractedZipFiles[index]) return;
+    requestDownload(() => {
+        const item = extractedZipFiles[index];
+        saveAs(item.blob, item.name);
+        showToast("📥 Extracted file saved successfully!");
+    });
+}
+
+function downloadAllExtractedZipFiles() {
+    if (extractedZipFiles.length === 0) return;
+    requestDownload(() => {
+        extractedZipFiles.forEach(item => {
+            saveAs(item.blob, item.name);
+        });
+        showToast("📥 All extracted files downloaded!");
+    });
+}
     </script>
 </body>
 </html>
